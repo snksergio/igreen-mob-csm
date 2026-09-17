@@ -39,6 +39,7 @@ export type PageId =
   | "estrutura-rede"
   | "locais"
   | "usuarios"
+  | "splits"
   | "configurar-alertas"
   /**
    * Os dois destinos FORA DO RAIL, alcançados pelo chrome e não pelo menu.
@@ -69,6 +70,7 @@ export const PAGE_LABELS: Record<PageId, string> = {
   "estrutura-rede": "Estrutura da rede",
   locais: "Locais",
   usuarios: "Usuários",
+  splits: "Splits",
   "configurar-alertas": "Configurar alertas",
   alertas: "Alertas",
   "minha-conta": "Minha conta",
@@ -113,7 +115,10 @@ export const NAV_CATEGORIES: SingleMenuCategory[] = [
     id: "financeiro",
     icon: <Wallet />,
     label: "Financeiro",
-    items: [{ id: "repasses", label: "Repasses" }],
+    items: [
+      { id: "repasses", label: "Repasses" },
+      { id: "splits", label: "Splits" },
+    ],
   },
   /**
    * `Infraestrutura` — o equipamento físico, nas três formas em que se fala dele:

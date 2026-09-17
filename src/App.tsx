@@ -15,6 +15,7 @@ import { EstruturaDaRedePage } from "~/pages/estrutura-rede/EstruturaDaRedePage"
 import { LocaisPage } from "~/pages/locais/LocaisPage";
 import { UsuariosPage } from "~/pages/usuarios/UsuariosPage";
 import { PermissoesPage } from "~/pages/permissoes/PermissoesPage";
+import { SplitsPage } from "~/pages/splits/SplitsPage";
 import { AlertasListaPage } from "~/pages/alertas-lista/AlertasListaPage";
 import { MinhaContaPage } from "~/pages/minha-conta/MinhaContaPage";
 import { AlertasPage } from "~/pages/alertas/AlertasPage";
@@ -135,6 +136,8 @@ export function App() {
         <AlertasListaPage />
       ) : page === "minha-conta" ? (
         <MinhaContaPage />
+      ) : page === "splits" ? (
+        <SplitsPage />
       ) : page === "permissoes" ? (
         <PermissoesPage />
       ) : page === "configurar-alertas" ? (
