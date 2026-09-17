@@ -177,7 +177,22 @@ function SeletorDeLocaisComPerfil({
             Nenhum local encontrado.
           </p>
         ) : (
-          <ul className="flex flex-col">
+          /* ⚠️ `gap-gp-xs` (4px) e não `flex-col` seco.
+
+             Sem gap, as 17 linhas ficavam encostadas — e o que encosta não é o texto, são
+             os `SelectTrigger`, que têm 40px de altura e borda visível: dois deles colados
+             leem como um controle partido ao meio.
+
+             4px porque o pedido era "no mínimo 2px, sem separar muito": a 2px a borda de
+             um select ainda quase toca a do vizinho, e acima de 8px a lista de 17 itens
+             cresce ~136px e o scroll interno perde metade do que mostrava.
+
+             📋 **Lacuna do DS**: `SelectTrigger` crava `min-h-form-lg` e não expõe `size`
+             (`shadcn/select.tsx:24`). A saída natural — um select menor em linha densa —
+             não existe, e sobrescrever `min-h-form-*` por `className` é a armadilha da
+             L-072: com prefixo DS o `tailwind-merge` não reconhece o conflito, as duas
+             classes sobrevivem e a ordem do CSS decide. */
+          <ul className="flex flex-col gap-gp-xs">
             {filtrados.map((local) => {
               const id = `perm-local-${local.replace(/\W+/g, "-")}`;
               const marcado = local in valor;
