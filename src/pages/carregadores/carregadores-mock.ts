@@ -309,6 +309,69 @@ export const ADICIONAR = {
   continuar: "Continuar",
 } as const;
 
+/**
+ * Os três passos do cadastro de carregador — medidos em `/pt/chargers` (2026-09-17).
+ *
+ * ## É um fluxo, não um formulário, e a ordem é imposta pelo mundo
+ *
+ * A referência encadeia três telas e não deixa pular nenhuma, porque cada passo depende
+ * fisicamente do anterior:
+ *
+ * 1. **Identificação** — gera o ID. Sem ele não há o que configurar no equipamento.
+ * 2. **Conexão** — entrega a URL OCPP e o ID para quem está com o carregador na mão.
+ *    Este passo é de LEITURA: os dois campos são copiados para dentro do equipamento.
+ * 3. **Configurações** — nome, descrição e local. Só faz sentido depois que o
+ *    equipamento existe e se conecta; é o batismo, não o cadastro.
+ *
+ * ⚠️ Pedir os três de uma vez, num formulário só, inverteria a ordem real: quem está com
+ * a chave de fenda na mão ainda não escolheu o nome, e quem escolhe o nome não está no
+ * poste. Era o que o nosso modal fazia antes — um campo só e `Continuar` que fechava.
+ */
+export const PASSOS_DO_CADASTRO = [
+  { id: "identificar", rotulo: "Identificação" },
+  { id: "conectar", rotulo: "Conexão" },
+  { id: "finalizar", rotulo: "Configurações" },
+] as const;
+
+export type PassoDoCadastro = (typeof PASSOS_DO_CADASTRO)[number]["id"];
+
+/**
+ * Endpoint OCPP que o carregador usa para falar com o servidor.
+ *
+ * ⚠️ O host é NOSSO, não o da referência. A origem mostra o domínio dela, que carrega a
+ * marca que este projeto não usa — e um endereço de terceiro num campo com botão "Copiar"
+ * é o tipo de coisa que alguém cola num equipamento de verdade.
+ */
+export const URL_OCPP = "ws://ocpp.igreenmob.com.br:80/";
+
+export const CONECTAR = {
+  titulo: "Conectar carregador",
+  intro:
+    "Vamos configurar seu carregador e estabelecer conexão com o iGreen MOB.",
+  labelUrl: "URL OCPP",
+  labelId: "ID do Carregador",
+  copiar: "Copiar",
+  copiado: "Copiado!",
+  ajuda: "Copie as informações para configurar seu carregador",
+} as const;
+
+export const FINALIZAR = {
+  titulo: "Configurações finais",
+  labelNome: "Nome do carregador",
+  placeholderNome: "Defina um nome para este carregador",
+  labelDescricao: "Descrição",
+  placeholderDescricao: "Defina uma descrição para este carregador",
+  labelLocal: "Local do carregador",
+  placeholderLocal: "Vincule este carregador a um local",
+  /* ⚠️ "locais", não "sites" como na origem: este projeto tem uma tela chamada Locais, e
+     duas palavras para a mesma coisa no mesmo produto é o começo de todo glossário
+     inconsistente. */
+  aviso:
+    "Exibindo apenas os locais marcados no seletor global. Para ver os outros, ajuste o seletor no topo da página.",
+  voltar: "Voltar",
+  concluir: "Concluir cadastro",
+} as const;
+
 /** Modal `Excluir Carregador` — o texto de permanência é o que separa este dos outros. */
 export const EXCLUIR = {
   titulo: "Excluir Carregador",

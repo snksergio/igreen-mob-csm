@@ -6,10 +6,8 @@ import { PrecoDetailPanel } from "~/pages/precos/PrecoDetailPanel";
 import { CARREGADORES, type Carregador } from "./carregadores-mock";
 import { construirColunas } from "./carregadores-columns";
 import { CarregadorDetailPanel } from "./CarregadorDetailPanel";
-import {
-  ModalAdicionarCarregador,
-  ModalExcluirCarregador,
-} from "./carregadores-modais";
+import { ModalExcluirCarregador } from "./carregadores-modais";
+import { ModalAdicionarCarregador } from "./ModalAdicionarCarregador";
 
 /**
  * Tela de Carregadores — medida em `/pt/chargers?page=1` (2026-09-16).
