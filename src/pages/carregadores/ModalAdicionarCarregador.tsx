@@ -64,54 +64,100 @@ import {
    A trilha
    ──────────────────────────────────────────────────────────────────────────── */
 
+/**
+ * Trilha de passos — quadrado numerado, rótulo e descrição ABAIXO, fio de ponta a ponta.
+ *
+ * ## Três correções sobre a 1ª versão, todas apontadas na tela
+ *
+ * | era | virou | por quê |
+ * |---|---|---|
+ * | círculo de 24px, número em `caption-sm` | quadrado de 36px, número em `body-md bold` | o número é o que identifica o passo; em 12px ele era decoração |
+ * | rótulo AO LADO, em `caption-md text-fg-subtle` | **abaixo**, em `body-sm` com `fg-default`/`fg-muted` | ao lado disputava largura com o fio; e `subtle` sobre `surface` era fraco demais para ler de passagem |
+ * | fio entre rótulo e próximo número | fio **de ponta a ponta**, na linha dos quadrados | ele parava no meio do caminho porque dividia a linha com o texto |
+ *
+ * ## O truque que faz o fio ir "de fora a fora"
+ *
+ * Cada passo é uma coluna de largura igual (`grid-cols-3`), e **dentro** dela há sempre
+ * TRÊS peças na linha do número: fio à esquerda, quadrado, fio à direita. No primeiro
+ * passo o fio da esquerda e no último o da direita ficam `invisible` — não `hidden`,
+ * nem ausentes.
+ *
+ * ⚠️ A diferença importa: `invisible` mantém o elemento ocupando espaço, então o quadrado
+ * continua no CENTRO da coluna. Removendo o fio, o primeiro quadrado encostaria na
+ * esquerda e o último na direita, e os três deixariam de se alinhar com os rótulos
+ * centralizados embaixo.
+ *
+ * ## Mobile
+ *
+ * As três colunas continuam lado a lado — empilhar mataria a metáfora de progresso, que é
+ * horizontal. O que cede é o texto: a descrição some abaixo de `sm`, porque em ~110px de
+ * coluna ela quebraria em três linhas e empurraria o formulário para fora da dobra. O
+ * rótulo sozinho já responde "onde estou", que é a função da trilha.
+ */
 function TrilhaDePassos({ atual }: { atual: PassoDoCadastro }) {
   const indiceAtual = PASSOS_DO_CADASTRO.findIndex((p) => p.id === atual);
+  const ultimo = PASSOS_DO_CADASTRO.length - 1;
 
   return (
-    <ol className="flex items-center gap-gp-md">
+    <ol
+      className="grid w-full grid-cols-3"
+      aria-label="Passos do cadastro"
+    >
       {PASSOS_DO_CADASTRO.map((passo, i) => {
         const feito = i < indiceAtual;
         const ativo = i === indiceAtual;
+
+        const fio = (visivel: boolean, concluido: boolean) => (
+          <span
+            aria-hidden
+            className={`h-px flex-1 ${visivel ? "" : "invisible"} ${
+              concluido ? "bg-bg-success" : "bg-border-default"
+            }`}
+          />
+        );
+
         return (
-          <li key={passo.id} className="flex min-w-0 flex-1 items-center gap-gp-md">
-            <span
-              className={`grid size-[24px] shrink-0 place-items-center rounded-radius-full text-caption-sm font-bold tabular-nums ${
-                feito
-                  ? "bg-bg-success text-fg-on-success"
-                  : ativo
-                    ? "bg-bg-brand text-fg-on-brand"
-                    : "bg-bg-muted text-fg-subtle"
-              }`}
-              /* O passo concluído vira ✓ e perde o número: o número respondia "qual é
-                 este" e, depois de feito, a pergunta é "já passou?". */
-              aria-current={ativo ? "step" : undefined}
-            >
-              {feito ? (
-                <Check className="size-icon-2xs" strokeWidth={3} aria-hidden />
-              ) : (
-                i + 1
-              )}
-            </span>
-            <span
-              className={`truncate text-caption-md ${
-                ativo
-                  ? "font-semibold text-fg-default"
-                  : feito
-                    ? "text-fg-muted"
-                    : "text-fg-subtle"
-              }`}
-            >
-              {passo.rotulo}
-            </span>
-            {/* O fio só existe ENTRE passos — depois do último ele apontaria para fora. */}
-            {i < PASSOS_DO_CADASTRO.length - 1 && (
+          <li key={passo.id} className="flex min-w-0 flex-col items-center gap-gp-lg">
+            <div className="flex w-full items-center">
+              {fio(i > 0, feito || ativo)}
               <span
-                className={`h-px min-w-[12px] flex-1 ${
-                  feito ? "bg-bg-success" : "bg-border-default"
+                aria-current={ativo ? "step" : undefined}
+                className={`grid size-[36px] shrink-0 place-items-center rounded-radius-md text-body-md font-bold tabular-nums ${
+                  feito
+                    ? "bg-bg-success text-fg-on-success"
+                    : ativo
+                      ? /* Anel com `offset` na cor da superfície: é o destaque do print,
+                           e o offset é o que abre o respiro entre o anel e o quadrado. */
+                        "bg-bg-brand text-fg-on-brand ring-2 ring-ring-brand ring-offset-2 ring-offset-bg-surface"
+                      : "bg-bg-muted text-fg-muted"
                 }`}
-                aria-hidden
-              />
-            )}
+              >
+                {feito ? (
+                  <Check className="size-icon-sm" strokeWidth={3} aria-hidden />
+                ) : (
+                  i + 1
+                )}
+              </span>
+              {fio(i < ultimo, feito)}
+            </div>
+
+            <div className="flex min-w-0 flex-col items-center gap-[2px] px-gp-sm text-center">
+              <span
+                /* ⚠️ `caption-md` no mobile, `body-sm` a partir de `sm`. "Configurações"
+                   é palavra única de 13 letras: a 14px ela mede 99px e a coluna do
+                   mobile tem 97px — transbordava 2px, medido, e palavra única não
+                   quebra. `break-words` é a rede para um rótulo futuro mais longo. */
+                className={`break-words text-caption-md font-semibold leading-tight sm:text-body-sm ${
+                  ativo ? "text-fg-default" : "text-fg-muted"
+                }`}
+              >
+                {passo.rotulo}
+              </span>
+              {/* Some no mobile — ver o JSDoc. */}
+              <span className="hidden text-caption-sm leading-snug text-fg-subtle sm:block">
+                {passo.descricao}
+              </span>
+            </div>
           </li>
         );
       })}

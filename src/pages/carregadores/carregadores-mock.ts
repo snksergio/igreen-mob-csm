@@ -328,9 +328,21 @@ export const ADICIONAR = {
  * poste. Era o que o nosso modal fazia antes — um campo só e `Continuar` que fechava.
  */
 export const PASSOS_DO_CADASTRO = [
-  { id: "identificar", rotulo: "Identificação" },
-  { id: "conectar", rotulo: "Conexão" },
-  { id: "finalizar", rotulo: "Configurações" },
+  {
+    id: "identificar",
+    rotulo: "Identificação",
+    descricao: "Gere o ID do equipamento",
+  },
+  {
+    id: "conectar",
+    rotulo: "Conexão",
+    descricao: "Configure o carregador",
+  },
+  {
+    id: "finalizar",
+    rotulo: "Configurações",
+    descricao: "Dê nome e vincule ao local",
+  },
 ] as const;
 
 export type PassoDoCadastro = (typeof PASSOS_DO_CADASTRO)[number]["id"];
