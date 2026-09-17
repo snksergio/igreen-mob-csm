@@ -1,0 +1,19 @@
+/* O escopo de scan e EXPLICITO de proposito.
+ *
+ * `source(none)` desliga a auto-deteccao do Tailwind v4, que varre o diretorio do
+ * projeto inteiro (tudo que nao esta gitignorado). Sem isso, os markdown de
+ * `docs/` entram no scan e cada nome de classe citado num documento vira regra CSS
+ * real — medido em 2026-09-16. Pior que o peso: as classes fantasma MASCARAM a falha
+ * do `@source` abaixo, que e justamente o que a Tarefa 1 do plano existe pra pegar.
+ */
+@import "tailwindcss" source(none);
+
+/* O codigo deste app. Relativo a este arquivo, entao `./` e `src/`. */
+@source "./**/*.{ts,tsx}";
+
+/* O design system. Cobre `dist-lib/**`, nao so o `index.mjs`: as classes dos
+ * componentes flutuantes (Modal, Panel, dropdown, popover) vivem nos chunks. */
+@source "../node_modules/@snksergio/design-system/dist-lib/**/*.mjs";
+
+@import "@snksergio/design-system/theme.css";
+@import "tw-animate-css";
