@@ -53,11 +53,15 @@ import {
  * O contrário — limpar no fechamento — perde o ID gerado, que é a única coisa da tela que
  * não se recupera digitando de novo.
  *
- * ## A trilha em cima é orientação, não navegação
+ * ## A trilha navega PARA TRÁS, e só
  *
- * Os passos mostram onde se está e quantos faltam, mas **não são clicáveis**: pular para
- * "Configurações" sem ID produz um cadastro sem equipamento. O caminho de volta existe
- * pelo botão `Voltar`, que é o gesto que a pessoa procura.
+ * Passo concluído é clicável e volta para ele; passo futuro não é. A assimetria não é
+ * preguiça — é a única regra segura: voltar é sempre válido porque o dado do passo
+ * anterior já existe, e **avançar clicando pularia a validação** que o `Continuar` faz
+ * (sem ID de 6 caracteres não há o que conectar; sem nome não há o que salvar).
+ *
+ * O `Voltar` do rodapé continua existindo: ele é o gesto de quem não percebeu que a
+ * trilha é clicável, e é onde a mão está depois de ler o formulário.
  */
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -93,8 +97,22 @@ import {
  * horizontal. O que cede é o texto: a descrição some abaixo de `sm`, porque em ~110px de
  * coluna ela quebraria em três linhas e empurraria o formulário para fora da dobra. O
  * rótulo sozinho já responde "onde estou", que é a função da trilha.
+ *
+ * ## O alvo de clique é maior que o quadrado
+ *
+ * ⚠️ O quadrado tem 36px, abaixo dos 44px que a WCAG pede para alvo de toque. O botão
+ * ganha `p-pad-md` (8px por lado → 52px de alvo) e `-m-pad-md` para devolver o espaço:
+ * sem a margem negativa o botão empurraria os fios e o quadrado sairia do centro da
+ * coluna, desalinhando do rótulo embaixo.
  */
-function TrilhaDePassos({ atual }: { atual: PassoDoCadastro }) {
+function TrilhaDePassos({
+  atual,
+  onVoltarPara,
+}: {
+  atual: PassoDoCadastro;
+  /** Chamado ao clicar num passo JÁ CONCLUÍDO. Ver o JSDoc do topo. */
+  onVoltarPara: (passo: PassoDoCadastro) => void;
+}) {
   const indiceAtual = PASSOS_DO_CADASTRO.findIndex((p) => p.id === atual);
   const ultimo = PASSOS_DO_CADASTRO.length - 1;
 
@@ -116,28 +134,44 @@ function TrilhaDePassos({ atual }: { atual: PassoDoCadastro }) {
           />
         );
 
+        const quadrado = (
+          <span
+            aria-current={ativo ? "step" : undefined}
+            className={`grid size-[36px] shrink-0 place-items-center rounded-radius-md text-body-md font-bold tabular-nums transition-colors ${
+              feito
+                ? "bg-bg-success text-fg-on-success"
+                : ativo
+                  ? /* Anel com `offset` na cor da superfície: é o destaque do print,
+                       e o offset é o que abre o respiro entre o anel e o quadrado. */
+                    "bg-bg-brand text-fg-on-brand ring-2 ring-ring-brand ring-offset-2 ring-offset-bg-surface"
+                  : "bg-bg-muted text-fg-muted"
+            }`}
+          >
+            {feito ? (
+              <Check className="size-icon-sm" strokeWidth={3} aria-hidden />
+            ) : (
+              i + 1
+            )}
+          </span>
+        );
+
         return (
           <li key={passo.id} className="flex min-w-0 flex-col items-center gap-gp-lg">
             <div className="flex w-full items-center">
               {fio(i > 0, feito || ativo)}
-              <span
-                aria-current={ativo ? "step" : undefined}
-                className={`grid size-[36px] shrink-0 place-items-center rounded-radius-md text-body-md font-bold tabular-nums ${
-                  feito
-                    ? "bg-bg-success text-fg-on-success"
-                    : ativo
-                      ? /* Anel com `offset` na cor da superfície: é o destaque do print,
-                           e o offset é o que abre o respiro entre o anel e o quadrado. */
-                        "bg-bg-brand text-fg-on-brand ring-2 ring-ring-brand ring-offset-2 ring-offset-bg-surface"
-                      : "bg-bg-muted text-fg-muted"
-                }`}
-              >
-                {feito ? (
-                  <Check className="size-icon-sm" strokeWidth={3} aria-hidden />
-                ) : (
-                  i + 1
-                )}
-              </span>
+              {feito ? (
+                <button
+                  type="button"
+                  onClick={() => onVoltarPara(passo.id)}
+                  title={`Voltar para ${passo.rotulo}`}
+                  aria-label={`Voltar para ${passo.rotulo}`}
+                  className="-m-pad-md grid shrink-0 cursor-pointer place-items-center rounded-radius-lg p-pad-md focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring-brand [&>span]:hover:ring-2 [&>span]:hover:ring-ring-brand [&>span]:hover:ring-offset-2 [&>span]:hover:ring-offset-bg-surface"
+                >
+                  {quadrado}
+                </button>
+              ) : (
+                quadrado
+              )}
               {fio(i < ultimo, feito)}
             </div>
 
@@ -332,7 +366,23 @@ export function ModalAdicionarCarregador({
       secondaryAction={acoes.secundaria}
       primaryAction={acoes.primaria}
     >
-      <TrilhaDePassos atual={passo} />
+      {/* ⚠️ O respiro é DAQUI, não do `Modal`.
+
+          O body do `Modal` dá `py-[22px]` e `gap-[18px]` entre filhos — suficiente para
+          dois blocos de formulário, e apertado para uma trilha, que é um elemento de
+          navegação: ela encostava no cabeçalho e o primeiro rótulo de campo começava 18px
+          abaixo dela, como se fosse a legenda do passo.
+
+          `pb-pad-4xl` soma aos 18px do gap e dá ~44px até o formulário; `pt-pad-lg` soma
+          aos 22px e dá 32px até o cabeçalho. A trilha passa a ler como faixa própria. */}
+      <div className="pb-pad-4xl pt-pad-lg">
+        <TrilhaDePassos
+          atual={passo}
+          /* Só recebe passo JÁ CONCLUÍDO — a própria trilha garante isso ao só
+             transformar em botão o que está atrás do atual. */
+          onVoltarPara={setPasso}
+        />
+      </div>
 
       {passo === "identificar" && (
         <div className="flex flex-col gap-gp-md">
