@@ -189,7 +189,20 @@ export function AbaFinanceiro({
             </ChipGroup>
           }
         >
-          <ChartContainer config={configPico} className="h-[240px] w-full">
+          {/* ⚠️ `flex-1 min-h-[240px]`, não `h-[240px]`.
+
+              O card vive numa linha `items-stretch` ao lado da rosca de "Receita bruta
+              por app", que é mais alta (rosca + legenda). Com altura FIXA, o gráfico
+              ficava nos 240px e sobravam ~90px de card vazio embaixo dele.
+
+              O `min-h` não é redundante: `flex-1` zera o `flex-basis`, e sem um piso o
+              Recharts mede altura zero e não desenha nada — é o mesmo defeito que o mapa
+              dentro do `FormField` teve em Estrutura da rede. O piso garante os 240px
+              quando não há sobra, e o `flex-1` come a sobra quando há. */}
+          <ChartContainer
+            config={configPico}
+            className="min-h-[240px] w-full flex-1"
+          >
             <BarChart data={pico} margin={{ left: 4, right: 4, top: 8 }}>
               <CartesianGrid vertical={false} strokeDasharray="4 4" />
               <XAxis

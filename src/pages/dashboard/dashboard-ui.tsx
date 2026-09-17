@@ -158,9 +158,16 @@ export interface Fatia {
  *
  * | era | virou | por quê |
  * |---|---|---|
- * | anel de 24px (`56→80`) | **38px** (`62→100`) | o mais grosso do DS é 28px; o pedido era "mais gordo", e o furo de 124px ainda comporta o número |
  * | legenda AO LADO | **abaixo** | ao lado, a rosca encolhia para caber os dois e o furo ficava menor que o texto |
  * | valor central cortado | `leading-none` + `inset-0` | o `line-height` herdado empurrava as duas linhas contra o anel |
+ *
+ * ## A espessura foi de 24px → 38px → **20px**, e o caminho importa
+ *
+ * A 1ª versão tinha 24px (`56→80`) e o pedido foi "mais gorda"; virou 38px (`62→100`),
+ * que passou do ponto — ali o anel domina o card e o furo aperta o número. O alvo real era
+ * a proporção das referências: **anel ≈ 24% do raio**, hoje `62→82` num container de
+ * 200px. Fino o bastante para o furo respirar, grosso o bastante para a fatia de 5,6%
+ * ainda ter presença.
  *
  * ## Por que o centro não corta
  *
@@ -203,7 +210,7 @@ export function Rosca({
   return (
     <div className="flex flex-1 flex-col gap-gp-2xl">
       <div className="relative mx-auto flex items-center justify-center">
-        <ChartContainer config={config} className="aspect-square h-[240px]">
+        <ChartContainer config={config} className="aspect-square h-[200px]">
           <PieChart>
             <ChartTooltip
               cursor={false}
@@ -214,8 +221,14 @@ export function Rosca({
               dataKey="valor"
               nameKey="rotulo"
               innerRadius={62}
-              outerRadius={100}
+              outerRadius={82}
               paddingAngle={3}
+              /* Ponta arredondada em cada fatia — o acabamento das referências. Vale 8
+                 num anel de 20px: o teto é metade da espessura, e encostar nele come
+                 comprimento de arco da fatia menor (5,6% aqui), que passa a ler como
+                 pílula e não como fração. `paddingAngle` continua abrindo o vão entre
+                 fatias; as duas coisas somam. */
+              cornerRadius={8}
               strokeWidth={0}
               /* Primeira fatia às 12h, sentido horário — a leitura que se espera. */
               startAngle={90}
@@ -235,8 +248,14 @@ export function Rosca({
 
       {/* Legenda abaixo: barrinha de cor, rótulo que estica, valor e o percentual numa
           coluna de largura fixa. A largura fixa é o que alinha os percentuais — só
-          `tabular-nums` não resolve, porque "9,4%" e "41,2%" têm contagens diferentes. */}
-      <ul className="flex flex-col">
+          `tabular-nums` não resolve, porque "9,4%" e "41,2%" têm contagens diferentes.
+
+          ⚠️ `mt-auto` **fixa a legenda no rodapé do card**. Os três cards da linha têm
+          `items-stretch`, então o mais alto define a altura de todos — e a sobra caía
+          DEPOIS da legenda, deixando um vão embaixo dela e as três legendas em alturas
+          diferentes. Com `mt-auto` a sobra vai para cima, entre a rosca e a legenda: as
+          legendas alinham entre si e o desalinhamento sai da parte que o olho compara. */}
+      <ul className="mt-auto flex flex-col">
         {dados.map((f) => (
           <li
             key={f.chave}
@@ -304,6 +323,18 @@ export interface UfNoMapa {
  * — ela é a informação, o mapa é a leitura rápida dela. Sem rede, a tela continua
  * respondendo a pergunta, só sem o desenho.
  *
+ * ## O mapa tem TETO de largura, e é isso que estabiliza a linha inteira
+ *
+ * ⚠️ O svg do `ChoroplethMap` é `block h-auto w-full`: a altura dele sai da razão do
+ * `viewBox` (800×600), então **ele cresce com a largura do card**. Num monitor largo o
+ * mapa passava de 370px de alto e, como a linha usa `items-stretch`, os dois cards de
+ * rosca eram esticados junto — daí a área vazia enorme embaixo das legendas, que o
+ * operador viu no print.
+ *
+ * O teto de 300px de largura resolve na raiz: com o `viewBox` 4:3 isso fixa o mapa em
+ * ~225px de alto em qualquer resolução, e a linha passa a ser medida pelo conteúdo dos
+ * cards, não pela largura da janela. `mx-auto` mantém o desenho centrado no card largo.
+ *
  * ## A escala é contínua, não por posição no ranking
  *
  * ⚠️ `colorScale` recebe `(valor, {min, max})` e **não recebe a feature** — pintar o 1º
@@ -338,9 +369,10 @@ export function MapaDeMovimentacao({
 
   return (
     <div className="flex flex-1 flex-col gap-gp-2xl">
-      <div className="flex min-h-[240px] items-center justify-center">
+      <div className="flex min-h-[225px] items-center justify-center">
         {malha ? (
-          <ChoroplethMap
+          <div className="mx-auto w-full max-w-[300px]">
+            <ChoroplethMap
             geography={malha}
             topologyObject="BRUF"
             values={valores}
@@ -365,9 +397,10 @@ export function MapaDeMovimentacao({
             showLegend={false}
             strokeWidth={0.5}
             ariaLabel="Movimentação por estado"
-            /* `w-full` é obrigatório dentro de flex centrado — é gotcha do USAGE.md. */
-            className="w-full"
-          />
+              /* `w-full` é obrigatório dentro de flex centrado — é gotcha do USAGE.md. */
+              className="w-full"
+            />
+          </div>
         ) : (
           <p className="text-caption-md text-fg-muted">
             {falhou
@@ -377,7 +410,9 @@ export function MapaDeMovimentacao({
         )}
       </div>
 
-      <ul className="grid grid-cols-2 gap-x-gp-2xl gap-y-gp-sm">
+      {/* `mt-auto` pelo mesmo motivo da rosca: a legenda é o rodapé do card, e a sobra
+          de altura pertence ao espaço acima dela. */}
+      <ul className="mt-auto grid grid-cols-2 gap-x-gp-2xl gap-y-gp-sm">
         {ufs.slice(0, 6).map((u, i) => (
           <li key={u.uf} className="flex items-center gap-gp-md">
             <span
