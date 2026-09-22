@@ -251,11 +251,23 @@ export function AbaVisaoGeral({
                   AJUSTES_DO_KPI,
                   /* ⚠️ A divisória HORIZONTAL entre as filas é nossa. O `divided` do
                      `KpiGroup` emite `sm:divide-y-0 sm:divide-x`: a partir de `sm` ele
-                     separa só na vertical, e com duas filas de quatro as linhas ficam
-                     coladas. `divide-y` de volta não serve — em grade ele põe borda no
-                     topo de TODOS a partir do 2º, inclusive dentro da mesma fila. Borda
-                     só nos quatro da segunda fila é o único recorte correto. */
-                  indice >= 4 ? "border-t border-border-subtle" : "",
+                     separa só na vertical, e as filas ficam coladas. `divide-y` de volta
+                     não serve — em grade ele põe borda no topo de TODOS a partir do 2º,
+                     inclusive dentro da mesma fila.
+
+                     ⚠️ **Quem começa fila DEPENDE da largura**, e era isso que estava
+                     errado: `indice >= 4` valia só para quatro colunas. Desde que o grupo
+                     passou a ter 2 colunas entre `lg` e `xl`, o 3º e o 4º KPI passaram a
+                     abrir a segunda fila e ficavam sem risco nenhum acima — é o vão que
+                     aparecia abaixo de "Recargas / Receita total bruta".
+
+                     Abaixo de `sm` não entra borda: ali é uma coluna só e o `divide-y` do
+                     próprio `KpiGroup` já separa. */
+                  indice >= 4
+                    ? "sm:border-t border-border-subtle"
+                    : indice >= 2
+                      ? "sm:border-t xl:border-t-0 border-border-subtle"
+                      : "",
                 ]
                   .filter(Boolean)
                   .join(" ")}

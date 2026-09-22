@@ -1,15 +1,7 @@
-import { useState, type ReactNode } from "react";
-import {
-  AlertTriangle,
-  BellRing,
-  Moon,
-  PanelLeftOpen,
-  PlugZap,
-  Sun,
-} from "lucide-react";
+import { useLayoutEffect, type ReactNode } from "react";
+import { AlertTriangle, BellRing, Moon, PlugZap, Sun } from "lucide-react";
 import {
   AppShell as DsAppShell,
-  Button,
   type HeaderNotificationsConfig,
   type HeaderThemeOption,
   type Theme,
@@ -38,30 +30,76 @@ function railComecaRetraido() {
 }
 
 /**
- * Botão de expandir o rail, no canto direito do header.
+ * Recolhe o rail **clicando no botão do próprio DS**, em vez de nascer recolhido.
  *
- * 📋 **Lacuna do DS, e é o que obriga este componente a existir.** Com o rail retraído o
- * `AppShell` esconde o `sidebarModule` e o `sidebarTopSlot` — que aqui são a EMPRESA e os
- * LOCAIS, o recorte global de que toda tela depende — e **não desenha nenhum gatilho de
- * expandir**: o cabeçalho da sidebar fica só com a logo (medido no DOM, 2026-09-22). Sem
- * isto, retrair abaixo de 1360 tornaria o escopo inalcançável, sem caminho de volta.
+ * ## Por que um clique simulado, e não `defaultMenuCollapsed`
  *
- * Aparece só quando retraído: com o rail aberto o próprio DS já oferece o botão de fechar.
+ * A `SingleMenuSidebar` abre o rail inteiro no hover enquanto ele está recolhido — é
+ * assim que se alcança empresa e locais sem reabrir o menu. Só que o hover é guardado por
+ * um estado interno `lockedOpen`, e o `AppShell` passa para a sidebar **apenas**
+ * `expanded` (controlado), nunca `defaultExpanded`. Resultado: `lockedOpen` nasce com o
+ * default do componente, que é `true`, e o `onMouseEnter` começa com
+ * `if (lockedOpen) return`.
+ *
+ * Na prática: nascer recolhido por `defaultMenuCollapsed` dá um rail recolhido **sem
+ * hover**; recolher pelo clique dá um rail recolhido **com hover**. Medido nos dois
+ * caminhos — a 1440 recolhido no clique o painel abre em 280px no hover; a 1024 recolhido
+ * pelo default ele fica em 80px. 📋 Lacuna do DS: só o `toggle()` escreve `lockedOpen`.
+ *
+ * ## O que acontece se o DS mudar
+ *
+ * O botão é achado pelo `aria-label`. Se ele mudar de nome, o clique não acontece e a
+ * tela abre com o rail **aberto** — que é o comportamento antigo, não uma tela quebrada.
+ * Degradação segura, de propósito.
  */
-function BotaoDeExpandirRail({ onExpandir }: { onExpandir: () => void }) {
-  return (
-    <Button
-      variant="ghost"
-      color="secondary"
-      size="sm"
-      /* Sem filho: o `Button` do DS não tem prop `iconOnly`, e um botão só com
-         `iconLeft` já renderiza quadrado. O nome acessível vem do `aria-label`. */
-      iconLeft={<PanelLeftOpen />}
-      onClick={onExpandir}
-      aria-label="Expandir o menu e o seletor de locais"
-      title="Expandir o menu e o seletor de locais"
-    />
-  );
+/**
+ * Recolhe o rail **clicando no botão do próprio DS**, em vez de nascer recolhido.
+ *
+ * ## Por que um clique simulado, e não `defaultMenuCollapsed`
+ *
+ * A `SingleMenuSidebar` abre o rail inteiro no hover enquanto está recolhida — é assim
+ * que se alcança empresa e locais sem reabrir o menu. Só que o hover é guardado por um
+ * estado interno `lockedOpen`, e o `AppShell` passa para a sidebar **apenas** `expanded`
+ * (controlado), nunca `defaultExpanded`. Resultado: `lockedOpen` nasce com o default do
+ * componente, que é `true`, e o `onMouseEnter` começa com `if (lockedOpen) return`.
+ *
+ * Medido nos dois caminhos, a 1024: nascer recolhido por `defaultMenuCollapsed` dá um
+ * rail de 80px **sem hover**; recolher pelo clique dá um rail de 80px **com hover**, que
+ * abre o painel de 280px por cima do conteúdo. 📋 Lacuna do DS: só o `toggle()` escreve
+ * `lockedOpen`.
+ *
+ * ## Por que com atraso, e não num `requestAnimationFrame`
+ *
+ * Recolher tem transição de largura de 300ms, e em desenvolvimento o StrictMode monta o
+ * efeito duas vezes. Clicando no frame seguinte, a segunda montagem ainda lê o rail como
+ * aberto e clica de novo — dois cliques se anulam. Com o atraso, a limpeza da primeira
+ * montagem cancela o agendamento antes de ele acontecer, e só a segunda executa.
+ *
+ * ## Se o DS mudar
+ *
+ * O botão é achado pelo `aria-label`. Se ele mudar de nome, o clique não acontece e a
+ * tela abre com o rail **aberto** — comportamento antigo, não tela quebrada.
+ */
+const ESPERA_ATE_A_SIDEBAR_ASSENTAR = 400;
+
+function useRailRecolhidoComoSeFosseClique() {
+  useLayoutEffect(() => {
+    if (!railComecaRetraido()) return;
+    const id = window.setTimeout(() => {
+      const barra = document.querySelector("aside");
+      if (!barra) return;
+      /* Não clica num rail que já está recolhido.
+         ⚠️ A largura que responde é a do `<aside>` (80 recolhido · 280 aberto), **não a
+         do filho**: o painel interno mantém 280 sempre e vira overlay quando recolhido —
+         é exatamente esse overlay que o hover revela. */
+      if (barra.getBoundingClientRect().width < 200) return;
+      const botao = [...barra.querySelectorAll("button")].find((x) =>
+        /recolher|colapsar/i.test(x.getAttribute("aria-label") ?? ""),
+      );
+      botao?.click();
+    }, ESPERA_ATE_A_SIDEBAR_ASSENTAR);
+    return () => window.clearTimeout(id);
+  }, []);
 }
 
 interface Props {
@@ -152,14 +190,7 @@ export function AppShell({
   onTemaChange,
   children,
 }: Props) {
-  /**
-   * Retração do rail **controlada por nós**, e não pelo estado interno do DS.
-   *
-   * O DS aceita `defaultMenuCollapsed` (uncontrolled) — bastaria para abrir retraído. Mas
-   * aí não dá pra SABER se está retraído, e é essa informação que decide se o header
-   * precisa mostrar o botão de expandir. Ver o JSDoc de `BotaoDeExpandirRail`.
-   */
-  const [railRetraido, setRailRetraido] = useState(railComecaRetraido);
+  useRailRecolhidoComoSeFosseClique();
 
   return (
     <DsAppShell
@@ -170,8 +201,9 @@ export function AppShell({
          Passávamos `false` cru, o que **vence a regra responsiva inclusive em telas
          pequenas** — e era por isso que a 1024 o rail continuava aberto comendo 220px do
          conteúdo. Agora a regra é nossa, com a fronteira medida. */
-      menuCollapsed={railRetraido}
-      onMenuCollapseChange={setRailRetraido}
+      /* Abre EXPANDIDO sempre; quem recolhe em tela pequena é o clique simulado do
+         `useRailRecolhidoComoSeFosseClique` — ver o JSDoc dele para o porquê. */
+      defaultMenuCollapsed={false}
       /* ESCOPO GLOBAL no topo da sidebar, em dois campos empilhados:
            · `sidebarModule`  → a EMPRESA (seletor do DS, não troca o menu)
            · `sidebarTopSlot` → os LOCAIS (multi-select nosso, ver `EscopoGlobal.tsx`)
@@ -206,11 +238,6 @@ export function AppShell({
       onThemeChange={(id) => onTemaChange(id as Theme)}
       themeOptions={OPCOES_TEMA}
       notifications={notificacoesDoHeader(() => onNavigate("alertas"))}
-      headerRightSlot={
-        railRetraido ? (
-          <BotaoDeExpandirRail onExpandir={() => setRailRetraido(false)} />
-        ) : undefined
-      }
       user={{ name: "Matheus Pego", email: "matheus.pego@exemplo.com.br" }}
       /**
        * `onSettings` leva à tela "Minha conta". A referência não tem esse item no menu

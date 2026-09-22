@@ -132,7 +132,7 @@ export function ResumoPage() {
           138px cada, e "686,28 kWh" precisa de 143px — quebrava sempre. Três colunas
           entre 1024 e 1280, cinco a partir daí. */}
       <KpiGroup columns={5} divided className="lg:grid-cols-3 xl:grid-cols-5">
-        {indicadores.map((i) => {
+        {indicadores.map((i, indice) => {
           /* ⚠️ "Ruim" é a variação contra o `subirEhBom`, NÃO o sinal do percentual.
              Derivar da seta quebraria no primeiro indicador em que subir é ruim — um
              "tempo médio de espera +12%" pintado de verde. É o gotcha que o `USAGE.md`
@@ -159,7 +159,20 @@ export function ResumoPage() {
               hint={i.detalhe}
               icon={<Icone />}
               tone={ruim ? "danger" : "neutral"}
-              className={AJUSTES_DO_KPI}
+              /* Divisória horizontal entre filas — mesma lacuna do `KpiGroup` descrita
+                 no Dashboard, e aqui ela nunca existiu: com 5 KPIs em `xl` cabe uma fila
+                 só, então o defeito só aparecia ao estreitar. As filas são 2+2+1 em `sm`,
+                 3+2 em `lg` e 5 em `xl`, então quem abre fila muda duas vezes. */
+              className={[
+                AJUSTES_DO_KPI,
+                indice >= 3
+                  ? "sm:border-t xl:border-t-0 border-border-subtle"
+                  : indice >= 2
+                    ? "sm:border-t lg:border-t-0 border-border-subtle"
+                    : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
               delta={
                 i.variacao ? (
                   <KpiDelta
