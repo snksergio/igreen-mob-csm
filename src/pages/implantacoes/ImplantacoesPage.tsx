@@ -36,10 +36,8 @@ import {
 } from "./implantacoes-ui";
 import { ImplantacaoDetailPanel } from "./ImplantacaoDetailPanel";
 import { ImplantacaoFormPanel } from "./ImplantacaoFormPanel";
-import { PanelAssistente } from "./PanelAssistente";
-import { PanelCompacto } from "./PanelCompacto";
 import { PanelDuasColunas } from "./PanelDuasColunas";
-import { PanelFichaComAbas } from "./PanelFichaComAbas";
+import { PanelResumoComAbas } from "./PanelResumoComAbas";
 
 /**
  * Funil de implantação — Kanban e tabela sobre os mesmos dados.
@@ -209,27 +207,27 @@ function construirColunas(handlers: {
 }
 
 /**
- * Três propostas de painel, uma por implantação, para comparar lado a lado.
+ * Duas propostas de painel, para comparar abrindo.
  *
  * ⚠️ **Isto é um comparador, não arquitetura.** Ligar o desenho do painel ao ID do
- * registro só faz sentido enquanto a escolha não foi feita; assim que uma proposta for
- * aprovada, este mapa some e o painel escolhido vale para todas. Está aqui, e não atrás
- * de um seletor na toolbar, porque comparar exige abrir os três sem configurar nada.
+ * registro só faz sentido enquanto a escolha não foi feita; assim que uma for
+ * aprovada, este mapa some e o painel escolhido vale para todas.
  *
  * | implantação | proposta | forma |
  * |---|---|---|
- * | Rede Boa Praça (`IMP-2026-001`) | **A** | cartão de status, uma coluna estreita |
- * | Pousada Serra Azul (`IMP-2026-002`) | **B** | workspace em duas colunas, com abas |
- * | Grupo Via Norte (`IMP-2026-003`) | **C** | assistente, uma etapa por vez |
- * | Condomínio Parque das Águas (`IMP-2026-004`) | **D** | ficha em três abas |
+ * | Pousada Serra Azul (`IMP-2026-002`) | **B** | duas colunas, coluna fixa + abas |
+ * | Rede Boa Praça (`IMP-2026-001`) | **E** | resumo fixo + Checklist / Detalhamento |
  *
- * As outras dez continuam no painel original — é o controle da comparação.
+ * As outras doze continuam no painel original — é o controle da comparação.
+ *
+ * As propostas **A** (cartão de status), **C** (assistente) e **D** (ficha em três
+ * abas) foram descartadas pelo operador em 2026-09-22 e removidas; nada delas foi
+ * reaproveitado, a pedido. O que sobreviveu foram as peças comuns, em
+ * `implantacoes-blocos.tsx`.
  */
-const PROPOSTA_POR_IMPLANTACAO: Record<string, "a" | "b" | "c" | "d"> = {
-  "IMP-2026-001": "a",
+const PROPOSTA_POR_IMPLANTACAO: Record<string, "b" | "e"> = {
+  "IMP-2026-001": "e",
   "IMP-2026-002": "b",
-  "IMP-2026-003": "c",
-  "IMP-2026-004": "d",
 };
 
 /** Colunas do board — derivadas de `ETAPAS`, na ordem do funil. */
@@ -365,7 +363,7 @@ export function ImplantacoesPage() {
     <div className="flex min-h-0 flex-1 flex-col gap-gp-2xl">
       <PageHeader
         title="Implantações"
-        description={`${IMPLANTACOES_TEXTOS.aviso} · Quatro propostas de painel em teste: Rede Boa Praça (A), Pousada Serra Azul (B), Grupo Via Norte (C) e Condomínio Parque das Águas (D).`}
+        description={`${IMPLANTACOES_TEXTOS.aviso} · Duas propostas de painel em teste: Pousada Serra Azul (B) e Rede Boa Praça (E).`}
         badge={
           <Chip color="neutral" variant="soft" size="sm" shape="rounded">
             {total} no funil · {emAtraso} {emAtraso === 1 ? "atrasada" : "atrasadas"}
@@ -516,21 +514,8 @@ export function ImplantacoesPage() {
       />
 
       {/* ⚠️ Cada proposta é um componente próprio e monta só quando é a vez dela. Um
-          painel único com prop `variant` teria os três layouts no mesmo arquivo, e a
+          painel único com prop `variant` teria os dois layouts no mesmo arquivo, e a
           comparação ficaria refém de quem consegue ler condicional aninhada. */}
-      {detalhe && proposta === "a" && (
-        <PanelCompacto
-          implantacao={detalhe}
-          onClose={() => setDetalheId(null)}
-          onAlternarItem={(itemId) => alternarItem(detalhe.id, itemId)}
-          onMoverEtapa={(etapa) => moverEtapa(detalhe, etapa)}
-          onEditar={abrirEdicao}
-          onExcluir={(i) => {
-            setDetalheId(null);
-            setAExcluir(i);
-          }}
-        />
-      )}
       {detalhe && proposta === "b" && (
         <PanelDuasColunas
           implantacao={detalhe}
@@ -544,16 +529,8 @@ export function ImplantacoesPage() {
           }}
         />
       )}
-      {detalhe && proposta === "c" && (
-        <PanelAssistente
-          implantacao={detalhe}
-          onClose={() => setDetalheId(null)}
-          onAlternarItem={(itemId) => alternarItem(detalhe.id, itemId)}
-          onMoverEtapa={(etapa) => moverEtapa(detalhe, etapa)}
-        />
-      )}
-      {detalhe && proposta === "d" && (
-        <PanelFichaComAbas
+      {detalhe && proposta === "e" && (
+        <PanelResumoComAbas
           implantacao={detalhe}
           onClose={() => setDetalheId(null)}
           onAlternarItem={(itemId) => alternarItem(detalhe.id, itemId)}

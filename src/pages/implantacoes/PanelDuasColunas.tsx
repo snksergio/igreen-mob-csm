@@ -132,11 +132,16 @@ export function PanelDuasColunas({
         {/* ══ Coluna de identidade — seções do próprio DS, colapsáveis ═══════ */}
         <aside className="scrollbar-thin flex shrink-0 flex-col overflow-y-auto border-b border-border-default lg:w-[384px] lg:border-b-0 lg:border-r">
           <div className="flex flex-col gap-gp-md border-b border-border-default px-pad-4xl py-pad-2xl">
-            <span className="flex items-start gap-gp-sm text-body-sm text-fg-default">
-              <MapPin className="mt-[2px] size-icon-sm shrink-0 text-fg-subtle" aria-hidden />
-              <span className="min-w-0 break-words font-medium">
-                {imp.local}
-                <span className="block text-caption-sm font-normal text-fg-muted">
+            {/* ⚠️ `body-md` no local e `body-sm` na cidade: em `body-sm`/`caption` o
+                bloco lia como legenda, e ele é o segundo título do painel — é o que
+                diz DE QUE ponto se está falando. */}
+            <span className="flex items-start gap-gp-md">
+              <MapPin className="mt-[3px] size-icon-md shrink-0 text-fg-subtle" aria-hidden />
+              <span className="min-w-0 break-words">
+                <span className="block text-body-md font-semibold leading-snug text-fg-default">
+                  {imp.local}
+                </span>
+                <span className="block text-body-sm text-fg-muted">
                   {imp.cidade} · {imp.uf}
                 </span>
               </span>
@@ -154,7 +159,7 @@ export function PanelDuasColunas({
             </span>
           </div>
 
-          <FloatingPanelSection title="Investimento">
+          <FloatingPanelSection collapsible={false} title="Investimento">
             <div className="flex flex-col gap-gp-sm">
               <span className="text-stat-sm font-bold tabular-nums text-fg-default">
                 {moeda(imp.investimento)}
@@ -166,7 +171,7 @@ export function PanelDuasColunas({
             </div>
           </FloatingPanelSection>
 
-          <FloatingPanelSection title="Condução">
+          <FloatingPanelSection collapsible={false} title="Condução">
             <div className="flex flex-col">
               <Dado
                 label="Responsável"
@@ -205,7 +210,7 @@ export function PanelDuasColunas({
             </div>
           </FloatingPanelSection>
 
-          <FloatingPanelSection title="Progresso do funil">
+          <FloatingPanelSection collapsible={false} title="Progresso do funil">
             <div className="flex flex-col gap-gp-md">
               <div className="flex items-baseline justify-between gap-gp-md">
                 <span className="text-body-sm text-fg-muted">Itens cumpridos</span>
@@ -225,7 +230,7 @@ export function PanelDuasColunas({
           </FloatingPanelSection>
 
           {imp.observacao && (
-            <FloatingPanelSection title="Observação">
+            <FloatingPanelSection collapsible={false} title="Observação">
               <p className="text-body-sm leading-relaxed text-fg-muted">{imp.observacao}</p>
             </FloatingPanelSection>
           )}
@@ -257,11 +262,12 @@ export function PanelDuasColunas({
               value="checklist"
               className="scrollbar-thin flex min-h-0 flex-1 flex-col gap-gp-xl overflow-y-auto pb-pad-3xl pt-pad-2xl"
             >
-              <div className="flex flex-col gap-[2px]">
-                <span className="text-body-md font-semibold text-fg-default">
+              {/* Título da etapa com mais evidência: é o assunto da coluna inteira. */}
+              <div className="flex flex-col gap-[3px]">
+                <span className="text-heading-xs font-bold leading-tight text-fg-default">
                   {ETAPA_POR_ID[imp.etapa].label}
                 </span>
-                <span className="text-caption-md leading-snug text-fg-muted">
+                <span className="text-body-sm leading-snug text-fg-muted">
                   {ETAPA_POR_ID[imp.etapa].resumo}
                 </span>
               </div>
@@ -271,8 +277,10 @@ export function PanelDuasColunas({
                 onAlternar={onAlternarItem}
                 variante="cartao"
               />
-              {/* Só o aviso: voltar e avançar moram no rodapé deste painel. */}
-              <AcoesDeEtapa implantacao={imp} onMover={onMoverEtapa} somenteAviso />
+              {/* Com botões, mesmo o rodapé tendo os mesmos: quem acabou de marcar o
+                  último item está olhando para cá, e prosseguir daqui evita um
+                  percurso de volta ao canto inferior. */}
+              <AcoesDeEtapa implantacao={imp} onMover={onMoverEtapa} />
             </TabsContent>
 
             <TabsContent
@@ -287,10 +295,10 @@ export function PanelDuasColunas({
               value="dados"
               className="scrollbar-thin -mx-pad-4xl min-h-0 flex-1 overflow-y-auto pb-pad-3xl"
             >
-              <FloatingPanelSection title="O ponto">
+              <FloatingPanelSection collapsible={false} title="O ponto">
                 <BlocoDoPonto implantacao={imp} />
               </FloatingPanelSection>
-              <FloatingPanelSection title="Prazos e responsável">
+              <FloatingPanelSection collapsible={false} title="Prazos e responsável">
                 <BlocoDePrazos implantacao={imp} />
               </FloatingPanelSection>
             </TabsContent>

@@ -1,5 +1,17 @@
 import type { ReactNode } from "react";
-import { ArrowLeft, ArrowRight, Lock, Pencil, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Building2,
+  CalendarDays,
+  CircleDollarSign,
+  Lock,
+  MapPin,
+  Pencil,
+  Route,
+  Trash2,
+  UserRound,
+} from "lucide-react";
 import { Avatar, Button, Chip } from "@snksergio/design-system";
 import { Checkbox } from "@snksergio/design-system/shadcn";
 import { corDoAvatar, iniciais } from "~/pages/motoristas/motoristas-ui";
@@ -139,39 +151,36 @@ export function ChecklistDaEtapa({
                         ? "border-border-brand bg-bg-brand-subtle"
                         : "border-border-default bg-bg-surface hover:border-border-brand hover:bg-bg-muted"
                     }`
-                  : "flex cursor-pointer items-start gap-gp-md rounded-radius-sm px-pad-md py-pad-lg transition-colors hover:bg-bg-muted has-[:focus-visible]:bg-bg-muted"
+                  : "flex cursor-pointer items-center gap-gp-md rounded-radius-sm px-pad-md py-pad-lg transition-colors hover:bg-bg-muted has-[:focus-visible]:bg-bg-muted"
               }
             >
               <Checkbox
                 checked={feito}
                 onCheckedChange={() => onAlternar(item.id)}
                 aria-label={item.texto}
-                className={`pointer-events-none ${variante === "linha" ? "mt-[2px]" : ""}`}
+                className="pointer-events-none shrink-0"
               />
-              <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
+              {/* ⚠️ O chip fica à DIREITA da linha, não embaixo do texto. Empilhado ele
+                  empurrava o item seguinte e fazia a lista perder o ritmo — e o
+                  obrigatório é um atributo do item, não uma segunda informação. */}
+              <span className="min-w-0 flex-1 break-words text-body-sm leading-snug">
                 <span
-                  className={`break-words text-body-sm leading-snug ${
+                  className={
                     feito && variante === "linha"
                       ? "text-fg-muted line-through"
                       : "text-fg-default"
-                  }`}
+                  }
                 >
                   {item.texto}
                 </span>
-                {item.obrigatorio && variante === "linha" && !feito && (
-                  <span className="flex">
-                    <Chip color="warning" variant="soft" size="sm" shape="pill">
-                      Obrigatório
-                    </Chip>
-                  </span>
-                )}
               </span>
-              {item.obrigatorio && variante === "cartao" && (
+              {item.obrigatorio && (
                 <Chip
                   color={feito ? "success" : "warning"}
                   variant="soft"
                   size="sm"
                   shape="pill"
+                  className="shrink-0"
                 >
                   {feito ? "OK" : "Obrigatório"}
                 </Chip>
@@ -453,6 +462,91 @@ export function BlocoDeCadastro({
         Excluir implantação
       </Button>
     </div>
+  );
+}
+
+/**
+ * Resumo sempre visível, no formato do print: ícone + rótulo à esquerda, valor em
+ * negrito à direita.
+ *
+ * ⚠️ São as MESMAS informações da tabela do funil, de propósito. Quem clicou numa linha
+ * quer continuar vendo o que o fez clicar; obrigar a abrir uma aba para reconferir o
+ * valor ou o responsável é fazer a pessoa guardar dado de cabeça entre duas telas.
+ */
+export function ResumoRapido({ implantacao }: { implantacao: Implantacao }) {
+  const imp = implantacao;
+  const linhas: { icone: ReactNode; label: string; valor: ReactNode }[] = [
+    { icone: <Building2 className="size-icon-sm" />, label: "Cliente", valor: imp.cliente },
+    {
+      icone: <MapPin className="size-icon-sm" />,
+      label: "Local",
+      valor: (
+        <span className="block whitespace-normal break-words text-right leading-snug">
+          {imp.local}
+        </span>
+      ),
+    },
+    {
+      icone: <Route className="size-icon-sm" />,
+      label: "Etapa",
+      valor: (
+        <span className="flex justify-end">
+          <Chip color="primary" variant="soft" size="sm" shape="pill">
+            {indiceDaEtapa(imp.etapa) + 1} de {ETAPAS.length} ·{" "}
+            {ETAPA_POR_ID[imp.etapa].label}
+          </Chip>
+        </span>
+      ),
+    },
+    {
+      icone: <CircleDollarSign className="size-icon-sm" />,
+      label: "Investimento",
+      valor: <span className="tabular-nums">{moeda(imp.investimento)}</span>,
+    },
+    {
+      icone: <UserRound className="size-icon-sm" />,
+      label: "Responsável",
+      valor: (
+        <span className="flex items-center justify-end gap-gp-sm">
+          <Avatar size="xs" colorHex={corDoAvatar(imp.responsavel)} aria-hidden>
+            {iniciais(imp.responsavel)}
+          </Avatar>
+          {imp.responsavel}
+        </span>
+      ),
+    },
+    {
+      icone: <CalendarDays className="size-icon-sm" />,
+      label: "Previsão",
+      valor: (
+        <span
+          className={`tabular-nums ${atrasada(imp) ? "text-fg-danger" : ""}`}
+        >
+          {dataCurta(imp.previsaoDeInstalacao)}
+        </span>
+      ),
+    },
+  ];
+
+  return (
+    <dl className="flex flex-col gap-gp-xl">
+      {linhas.map((l) => (
+        <div
+          key={l.label}
+          className="grid grid-cols-1 gap-x-gp-md gap-y-gp-2xs sm:grid-cols-[176px_1fr] sm:items-center"
+        >
+          <dt className="flex items-center gap-gp-md text-body-sm text-fg-muted">
+            <span className="grid shrink-0 place-items-center text-fg-subtle">
+              {l.icone}
+            </span>
+            {l.label}
+          </dt>
+          <dd className="min-w-0 text-body-sm font-semibold text-fg-default sm:text-right">
+            {l.valor}
+          </dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 
