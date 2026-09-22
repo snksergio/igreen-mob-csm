@@ -192,28 +192,23 @@ export function PanelComAbas({
             )}
           </TabsContent>
 
+          {/* ⚠️ `-mx-pad-4xl` porque o `FloatingPanelSection` gerencia o próprio
+              padding e desenha divisória de borda a borda — é para isso que o painel
+              está com `bodyPadded={false}`. Dentro do gutter das abas ele ficaria com
+              padding em dobro e a linha pararia antes da borda. */}
           <TabsContent
             value="detalhamento"
-            className="flex flex-col gap-gp-3xl pt-pad-2xl"
+            className="-mx-pad-4xl flex flex-col pt-pad-xl"
           >
-            <div className="flex flex-col gap-gp-lg">
-              <span className="text-body-sm font-semibold text-fg-default">
-                O ponto (somente leitura)
-              </span>
+            <FloatingPanelSection title="O ponto">
               <BlocoDoPonto implantacao={imp} />
-            </div>
+            </FloatingPanelSection>
 
-            <div className="flex flex-col gap-gp-lg">
-              <span className="text-body-sm font-semibold text-fg-default">
-                Prazos e responsável (somente leitura)
-              </span>
+            <FloatingPanelSection title="Prazos e responsável">
               <BlocoDePrazos implantacao={imp} />
-            </div>
+            </FloatingPanelSection>
 
-            <div className="flex flex-col gap-gp-lg">
-              <span className="text-body-sm font-semibold text-fg-default">
-                Observação
-              </span>
+            <FloatingPanelSection title="Observação">
               {imp.observacao ? (
                 <p className="text-body-sm leading-relaxed text-fg-muted">
                   {imp.observacao}
@@ -223,21 +218,22 @@ export function PanelComAbas({
                   Sem observação registrada.
                 </p>
               )}
-            </div>
+            </FloatingPanelSection>
 
-            <div className="flex flex-col gap-gp-lg border-t border-border-subtle pt-pad-3xl">
-              <span className="text-body-sm font-semibold text-fg-default">Cadastro</span>
-              <p className="text-caption-sm leading-snug text-fg-subtle">
-                {concluida(imp)
-                  ? "Implantação concluída — editar aqui altera o histórico."
-                  : "Editar muda os dados do ponto, não o andamento."}
-              </p>
-              <BlocoDeCadastro
-                implantacao={imp}
-                onEditar={onEditar}
-                onExcluir={onExcluir}
-              />
-            </div>
+            <FloatingPanelSection title="Cadastro">
+              <div className="flex flex-col gap-gp-lg">
+                <p className="text-caption-sm leading-snug text-fg-subtle">
+                  {concluida(imp)
+                    ? "Implantação concluída — editar aqui altera o histórico."
+                    : "Editar muda os dados do ponto, não o andamento."}
+                </p>
+                <BlocoDeCadastro
+                  implantacao={imp}
+                  onEditar={onEditar}
+                  onExcluir={onExcluir}
+                />
+              </div>
+            </FloatingPanelSection>
           </TabsContent>
         </Tabs>
       </div>

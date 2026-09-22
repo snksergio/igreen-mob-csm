@@ -1,5 +1,16 @@
 import { useMemo, useState } from "react";
-import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
+import {
+  AlertTriangle,
+  CalendarCheck,
+  CircleDollarSign,
+  Eye,
+  Pencil,
+  PlugZap,
+  Plus,
+  Route,
+  Trash2,
+  type LucideIcon,
+} from "lucide-react";
 import {
   AlertModal,
   Avatar,
@@ -34,9 +45,7 @@ import {
   ChipDeEtapa,
   ProgressoDaEtapa,
 } from "./implantacoes-ui";
-import { ImplantacaoDetailPanel } from "./ImplantacaoDetailPanel";
 import { ImplantacaoFormPanel } from "./ImplantacaoFormPanel";
-import { PanelDuasColunas } from "./PanelDuasColunas";
 import { PanelComAbas } from "./PanelComAbas";
 
 /**
@@ -207,28 +216,14 @@ function construirColunas(handlers: {
 }
 
 /**
- * Duas propostas de painel, para comparar abrindo.
+ * Os ajustes de anatomia que o `Kpi` do DS não expõe como prop.
  *
- * ⚠️ **Isto é um comparador, não arquitetura.** Ligar o desenho do painel ao ID do
- * registro só faz sentido enquanto a escolha não foi feita; assim que uma for
- * aprovada, este mapa some e o painel escolhido vale para todas.
- *
- * | implantação | proposta | forma |
- * |---|---|---|
- * | Pousada Serra Azul (`IMP-2026-002`) | **B** | duas colunas, coluna fixa + abas |
- * | Rede Boa Praça (`IMP-2026-001`) | **E** | andamento + Checklist / Detalhamento |
- *
- * As outras doze continuam no painel original — é o controle da comparação.
- *
- * As propostas **A** (cartão de status), **C** (assistente) e **D** (ficha em três
- * abas) foram descartadas pelo operador em 2026-09-22 e removidas; nada delas foi
- * reaproveitado, a pedido. O que sobreviveu foram as peças comuns, em
- * `implantacoes-blocos.tsx`.
+ * Copiados de Dashboard e Resumo de propósito: KPI com círculo de ícone quadrado num
+ * lugar e redondo em outro não lê como o mesmo componente. Quando um quarto consumidor
+ * aparecer, isto vira export compartilhado.
  */
-const PROPOSTA_POR_IMPLANTACAO: Record<string, "b" | "e"> = {
-  "IMP-2026-001": "e",
-  "IMP-2026-002": "b",
-};
+const AJUSTES_DO_KPI =
+  "[&>header>span]:rounded-radius-full [&>div:first-of-type]:-mt-gp-xs";
 
 /** Colunas do board — derivadas de `ETAPAS`, na ordem do funil. */
 const COLUNAS_DO_BOARD: KanbanColumn[] = ETAPAS.map((e) => ({
@@ -252,7 +247,6 @@ export function ImplantacoesPage() {
   /* Guardamos o ID, não o objeto: o painel precisa refletir a marcação do checklist
      feita dentro dele mesmo, e um objeto congelado no state mostraria o valor antigo. */
   const detalhe = implantacoes.find((i) => i.id === detalheId) ?? null;
-  const proposta = detalhe ? PROPOSTA_POR_IMPLANTACAO[detalhe.id] : undefined;
 
   const alternarItem = (impId: string, itemId: string) =>
     setImplantacoes((atual) =>
@@ -352,18 +346,49 @@ export function ImplantacoesPage() {
     .filter((i) => !concluida(i))
     .reduce((s, i) => s + i.investimento, 0);
 
-  const KPIS = [
-    { label: "No funil", valor: String(total), hint: `${total - concluidas} em andamento` },
-    { label: "Atrasadas", valor: String(emAtraso), hint: "previsão já passou", ruim: emAtraso > 0 },
-    { label: "Investimento em aberto", valor: moeda(investimentoAberto), hint: "o que ainda não instalou" },
-    { label: "Concluídas", valor: String(concluidas), hint: "carregador publicado" },
+  /* ⚠️ Com ÍCONE e com os ajustes de anatomia — é o que Dashboard e Resumo fazem, e
+     era o que faltava aqui. Sem o ícone o cartão perde o círculo de tom e passa a ler
+     como texto solto ao lado dos outros KPIs do produto. */
+  const KPIS: {
+    label: string;
+    valor: string;
+    hint: string;
+    icone: LucideIcon;
+    tom?: "danger" | "success";
+  }[] = [
+    {
+      label: "No funil",
+      valor: String(total),
+      hint: `${total - concluidas} em andamento`,
+      icone: Route,
+    },
+    {
+      label: "Atrasadas",
+      valor: String(emAtraso),
+      hint: "previsão já passou",
+      icone: emAtraso > 0 ? AlertTriangle : CalendarCheck,
+      tom: emAtraso > 0 ? "danger" : undefined,
+    },
+    {
+      label: "Investimento em aberto",
+      valor: moeda(investimentoAberto),
+      hint: "o que ainda não instalou",
+      icone: CircleDollarSign,
+    },
+    {
+      label: "Concluídas",
+      valor: String(concluidas),
+      hint: "carregador publicado",
+      icone: PlugZap,
+      tom: concluidas > 0 ? "success" : undefined,
+    },
   ];
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-gp-2xl">
       <PageHeader
         title="Implantações"
-        description={`${IMPLANTACOES_TEXTOS.aviso} · Duas propostas de painel em teste: Pousada Serra Azul (B) e Rede Boa Praça (E).`}
+        description={IMPLANTACOES_TEXTOS.aviso}
         badge={
           <Chip color="neutral" variant="soft" size="sm" shape="rounded">
             {total} no funil · {emAtraso} {emAtraso === 1 ? "atrasada" : "atrasadas"}
@@ -387,20 +412,33 @@ export function ImplantacoesPage() {
           Mesma correção do Dashboard. As bordas horizontais também são nossas: o
           `divided` só separa na vertical a partir de `sm`. */}
       <KpiGroup columns={4} divided className="lg:grid-cols-2 xl:grid-cols-4">
-        {KPIS.map((k, indice) => (
-          <Kpi
-            key={k.label}
-            label={k.label}
-            value={
-              k.ruim ? <span className="text-fg-danger">{k.valor}</span> : k.valor
-            }
-            hint={k.hint}
-            tone={k.ruim ? "danger" : "neutral"}
-            className={
-              indice >= 2 ? "sm:border-t xl:border-t-0 border-border-subtle" : ""
-            }
-          />
-        ))}
+        {KPIS.map((k, indice) => {
+          const Icone = k.icone;
+          return (
+            <Kpi
+              key={k.label}
+              label={k.label}
+              value={
+                k.tom === "danger" ? (
+                  <span className="text-fg-danger">{k.valor}</span>
+                ) : (
+                  k.valor
+                )
+              }
+              hint={k.hint}
+              icon={<Icone />}
+              tone={k.tom ?? "neutral"}
+              className={[
+                AJUSTES_DO_KPI,
+                indice >= 2
+                  ? "sm:border-t xl:border-t-0 border-border-subtle"
+                  : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+            />
+          );
+        })}
       </KpiGroup>
 
       <DataTable<Implantacao>
@@ -513,41 +551,15 @@ export function ImplantacoesPage() {
         }}
       />
 
-      {/* ⚠️ Cada proposta é um componente próprio e monta só quando é a vez dela. Um
-          painel único com prop `variant` teria os dois layouts no mesmo arquivo, e a
-          comparação ficaria refém de quem consegue ler condicional aninhada. */}
-      {detalhe && proposta === "b" && (
-        <PanelDuasColunas
-          implantacao={detalhe}
-          onClose={() => setDetalheId(null)}
-          onAlternarItem={(itemId) => alternarItem(detalhe.id, itemId)}
-          onMoverEtapa={(etapa) => moverEtapa(detalhe, etapa)}
-          onEditar={abrirEdicao}
-          onExcluir={(i) => {
-            setDetalheId(null);
-            setAExcluir(i);
-          }}
-        />
-      )}
-      {detalhe && proposta === "e" && (
+      {/* Painel único. As cinco propostas comparadas em 2026-09-22 terminaram aqui:
+          o operador escolheu a de Rede Boa Praça, e as outras quatro saíram do repo
+          — inclusive o painel original, que este substitui. */}
+      {detalhe && (
         <PanelComAbas
           implantacao={detalhe}
           onClose={() => setDetalheId(null)}
           onAlternarItem={(itemId) => alternarItem(detalhe.id, itemId)}
           onMoverEtapa={(etapa) => moverEtapa(detalhe, etapa)}
-          onEditar={abrirEdicao}
-          onExcluir={(i) => {
-            setDetalheId(null);
-            setAExcluir(i);
-          }}
-        />
-      )}
-      {!proposta && (
-        <ImplantacaoDetailPanel
-          implantacao={detalhe}
-          onClose={() => setDetalheId(null)}
-          onAlternarItem={(itemId) => detalhe && alternarItem(detalhe.id, itemId)}
-          onMoverEtapa={(etapa) => detalhe && moverEtapa(detalhe, etapa)}
           onEditar={abrirEdicao}
           onExcluir={(i) => {
             setDetalheId(null);
