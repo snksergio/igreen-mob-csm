@@ -79,7 +79,7 @@ export function LinhaDeDispositivo({
          `-mx-pad-md` + `px-pad-md` a área de conteúdo volta a ter a mesma origem e a mesma
          largura do grid pai. Subtrair os 8px (meu primeiro palpite) desalinhava o valor
          desta linha em 8px de todas as outras — medido. */
-      <div className="group/linha col-span-2 -mx-pad-md grid grid-cols-[var(--col-rotulo)_1fr] items-center gap-x-gp-md rounded-radius-md px-pad-md transition-colors hover:bg-bg-muted">
+      <div className="group/linha col-span-2 -mx-pad-md grid grid-cols-1 gap-x-gp-md gap-y-gp-2xs rounded-radius-md px-pad-md transition-colors hover:bg-bg-muted sm:grid-cols-[var(--col-rotulo)_1fr] sm:items-center">
         {rotulo}
         {conteudo}
       </div>

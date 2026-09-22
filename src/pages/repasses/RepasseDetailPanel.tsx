@@ -116,8 +116,16 @@ const COLUNAS: DataTableColumnDef<TransacaoDoRepasse>[] = [
     /* Sem o prefixo da empresa: ela é a mesma em todas as linhas do painel, e o prefixo
        come 13 caracteres. O `title` devolve o nome completo no hover — truncar sem forma
        de recuperar é esconder dado. */
+    /* ⚠️ `block truncate` no span, e não só `ellipsis: true` na coluna. Medido a
+       375px: a célula tem 227px e o nome pede 242px, mas quem estourava era ESTE span —
+       o `overflow: hidden` da célula cortava sem desenhar a reticência, porque
+       `text-overflow` só age no texto do próprio elemento, nunca num filho que
+       transborda. "Restaurante Fazendinha Brumadi" terminava sem nenhum sinal de que
+       havia mais. */
     render: ({ row }) => (
-      <span title={row.local}>{semPrefixo(row.local)}</span>
+      <span className="block truncate" title={row.local}>
+        {semPrefixo(row.local)}
+      </span>
     ),
   },
   {

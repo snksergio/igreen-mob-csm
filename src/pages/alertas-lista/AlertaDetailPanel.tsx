@@ -129,7 +129,7 @@ export function AlertaDetailPanel({
       }
     >
       <FloatingPanelSection title="Onde">
-        <div className="grid grid-cols-[180px_1fr] items-center gap-x-gp-md">
+        <div className="grid grid-cols-1 gap-x-gp-md gap-y-gp-2xs sm:grid-cols-[180px_1fr] sm:items-center">
           <Propriedade icone={Building2} label="Empresa" valor={a.empresa} />
           {/* Sem elipse: nome de local cortado é o que faz alguém despachar equipe pro
               ponto errado. Quebra em duas linhas. */}
@@ -146,7 +146,7 @@ export function AlertaDetailPanel({
       </FloatingPanelSection>
 
       <FloatingPanelSection title="Equipamento">
-        <div className="grid grid-cols-[180px_1fr] items-center gap-x-gp-md">
+        <div className="grid grid-cols-1 gap-x-gp-md gap-y-gp-2xs sm:grid-cols-[180px_1fr] sm:items-center">
           <Propriedade icone={Zap} label="Carregador" valor={a.carregador} />
           <Propriedade
             icone={Hash}
@@ -162,7 +162,7 @@ export function AlertaDetailPanel({
       </FloatingPanelSection>
 
       <FloatingPanelSection title="Quando">
-        <div className="grid grid-cols-[180px_1fr] items-center gap-x-gp-md">
+        <div className="grid grid-cols-1 gap-x-gp-md gap-y-gp-2xs sm:grid-cols-[180px_1fr] sm:items-center">
           <Propriedade
             icone={CalendarClock}
             label="Início do alerta"

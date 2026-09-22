@@ -158,7 +158,7 @@ export function GestaoDeCargaDetailPanel({ local, onClose }: Props) {
             16 de ícone e 8 de gap. Em 184 (o meu primeiro palpite) ela truncava pra
             "Reserva dinâmica (Ampe…", e rótulo de parâmetro elétrico cortado é justamente
             o que faz alguém confundir reserva com limite. */}
-        <div className="grid grid-cols-[200px_1fr] items-center gap-x-gp-md">
+        <div className="grid grid-cols-1 gap-x-gp-md gap-y-gp-2xs sm:grid-cols-[200px_1fr] sm:items-center">
           <Propriedade
             icone={Gauge}
             label="Corrente máxima disponível"

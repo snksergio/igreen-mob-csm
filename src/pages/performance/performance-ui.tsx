@@ -78,7 +78,10 @@ export function ComAjuda({
               type="button"
               aria-label="Ajuda"
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex shrink-0 cursor-help items-center text-fg-subtle transition-colors hover:text-fg-default focus-visible:text-fg-default focus-visible:outline-none"
+              /* `-m-pad-md p-pad-md`: o ícone tem 12px e no celular vira alvo
+                 impossível. O padding cresce a área sensível e a margem negativa devolve
+                 o espaço — a linha da métrica não se mexe. */
+              className="-m-pad-md inline-flex shrink-0 cursor-help items-center p-pad-md text-fg-subtle transition-colors hover:text-fg-default focus-visible:text-fg-default focus-visible:outline-none"
             >
               <HelpCircle className="size-icon-xs" />
             </button>

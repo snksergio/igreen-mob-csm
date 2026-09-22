@@ -83,7 +83,7 @@ interface Metrica {
  */
 function MetricaCartoes({ itens }: { itens: Metrica[] }) {
   return (
-    <div className="grid grid-cols-2 gap-gp-md">
+    <div className="grid grid-cols-1 gap-gp-md sm:grid-cols-2">
       {itens.map(({ icone: Icone, ...m }) => (
         <div
           key={m.label}
@@ -231,7 +231,7 @@ export function PlugueDetailPanel({
         {/* `200px` na coluna do rótulo, o mesmo de Gestão de Carga: `Último status
             reportado` é o rótulo mais longo daqui e pede 158px de texto, mais 16 de ícone
             e 8 de gap. */}
-        <div className="grid grid-cols-[200px_1fr] items-center gap-x-gp-md">
+        <div className="grid grid-cols-1 gap-x-gp-md gap-y-gp-2xs sm:grid-cols-[200px_1fr] sm:items-center">
           <Propriedade icone={MapPin} label="Local" valor={p.local} />
           <Propriedade
             icone={MapPin}

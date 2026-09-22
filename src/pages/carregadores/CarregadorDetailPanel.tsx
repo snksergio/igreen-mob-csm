@@ -234,7 +234,7 @@ export function CarregadorDetailPanel({
             CPCODE`).
 
             `184px` na coluna de rótulo: o maior é "Versão de firmware". */}
-        <div className="grid grid-cols-[184px_1fr] items-center gap-x-gp-md">
+        <div className="grid grid-cols-1 gap-x-gp-md gap-y-gp-2xs sm:grid-cols-[184px_1fr] sm:items-center">
           <LinhaDeDispositivo
             icone={Building2}
             label="Empresa"

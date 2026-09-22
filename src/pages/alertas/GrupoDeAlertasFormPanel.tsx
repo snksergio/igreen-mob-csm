@@ -153,7 +153,7 @@ export function GrupoDeAlertasFormPanel({
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-gp-md">
+        <div className="grid grid-cols-1 gap-gp-md sm:grid-cols-2">
           {TIPOS_DE_ALERTA.map((t) => {
             const ligado = tipos.includes(t);
             const id = `tipo-${t}`;

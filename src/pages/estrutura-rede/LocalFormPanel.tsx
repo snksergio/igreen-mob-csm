@@ -268,7 +268,7 @@ export function LocalFormPanel({
       >
         {/* Os dois switches lado a lado, com o rótulo à esquerda: é decisão binária, e
             empilhados em duas linhas de formulário pareceriam dois campos a preencher. */}
-        <div className="grid grid-cols-2 gap-form-gap">
+        <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-2">
           <label className="flex min-h-form-lg cursor-pointer items-center justify-between gap-gp-md rounded-radius-lg border border-border-default px-pad-2xl">
             <span className="text-body-sm font-semibold text-fg-default">
               Local ativo
@@ -315,7 +315,7 @@ export function LocalFormPanel({
         {/* Os dois carimbos da referência. Read-only e "—" quando é criação: eles são
             registro do sistema, não campo — e um input editável de "Data de Criação"
             convidaria a mentir sobre quando o cadastro nasceu. */}
-        <div className="grid grid-cols-2 gap-form-gap">
+        <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-2">
           <div className="flex items-center justify-between gap-gp-md text-body-sm">
             <span className="text-fg-muted">Data de criação</span>
             <span className="tabular-nums text-fg-default">
@@ -333,7 +333,7 @@ export function LocalFormPanel({
 
       {/* ── 2. Endereço ───────────────────────────────────────────────── */}
       <SecaoDeFormulario titulo="Informações do local">
-        <div className="grid grid-cols-[1fr_180px] gap-form-gap">
+        <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-[1fr_180px]">
           <FormFieldInput
             label="Nome do local"
             required
@@ -348,7 +348,7 @@ export function LocalFormPanel({
           />
         </div>
 
-        <div className="grid grid-cols-[1fr_140px_1fr] gap-form-gap">
+        <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-[1fr_140px_1fr]">
           <FormFieldInput label="Endereço" placeholder="Digite o endereço" {...campo("endereco")} />
           <FormFieldInput label="Número" placeholder="Nº" {...campo("numero")} />
           <FormFieldInput
@@ -358,7 +358,7 @@ export function LocalFormPanel({
           />
         </div>
 
-        <div className="grid grid-cols-[1fr_180px_180px] gap-form-gap">
+        <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-[1fr_180px_180px]">
           <FormFieldInput label="Cidade" placeholder="Digite a cidade" {...campo("cidade")} />
           <FormFieldInput label="Estado" placeholder="UF" {...campo("estado")} />
           <FormFieldInput label="País" placeholder="País" {...campo("pais")} />
@@ -379,7 +379,7 @@ export function LocalFormPanel({
 
       {/* ── 3. Negócio ────────────────────────────────────────────────── */}
       <SecaoDeFormulario titulo="Dados do negócio">
-        <div className="grid grid-cols-[1fr_220px] gap-form-gap">
+        <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-[1fr_220px]">
           <FormFieldInput
             label="Razão Social"
             placeholder="Deixe em branco para herdar da empresa"
@@ -393,7 +393,7 @@ export function LocalFormPanel({
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-form-gap">
+        <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-3">
           <FormFieldSelect
             label="Tipo de negócio"
             options={TIPOS_DE_NEGOCIO.map((t) => ({ value: t, label: t }))}
@@ -443,7 +443,7 @@ export function LocalFormPanel({
             return (
               <div
                 key={dia}
-                className="grid grid-cols-[150px_180px_1fr] items-center gap-gp-xl"
+                className="grid grid-cols-1 items-center gap-gp-xl sm:grid-cols-[150px_180px_1fr]"
               >
                 <span className="text-body-sm text-fg-default">{dia}</span>
                 {/* `Select` cru do shadcn, não `FormFieldSelect`: a linha já tem o nome do
@@ -519,7 +519,7 @@ export function LocalFormPanel({
           {...seleto("corDeFundo")}
         />
 
-        <div className="grid grid-cols-2 gap-form-gap">
+        <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-2">
           {/* `FileUploadField` é dumb de propósito: captura o `File` e mostra a miniatura;
               quem sobe é o consumidor. Num mock ninguém sobe, e está certo — o que
               importa é que o seletor de arquivo ABRE. */}
@@ -544,7 +544,7 @@ export function LocalFormPanel({
 
       {/* ── 6. Responsável ────────────────────────────────────────────── */}
       <SecaoDeFormulario titulo="Responsável pelo local">
-        <div className="grid grid-cols-2 gap-form-gap">
+        <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-2">
           <FormFieldInput
             label="Nome do responsável"
             placeholder="Nome completo"
@@ -557,7 +557,7 @@ export function LocalFormPanel({
             {...campo("cpf")}
           />
         </div>
-        <div className="grid grid-cols-2 gap-form-gap">
+        <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-2">
           <FormFieldInput
             label="E-mail do responsável"
             type="email"
@@ -578,7 +578,7 @@ export function LocalFormPanel({
         titulo="Dados bancários"
         descricao={ESTRUTURA_TEXTOS.semDadosBancarios}
       >
-        <div className="grid grid-cols-2 gap-form-gap">
+        <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-2">
           <FormFieldInput
             label="Chave PIX"
             placeholder="CPF/CNPJ, celular, e-mail ou aleatória"
@@ -591,7 +591,7 @@ export function LocalFormPanel({
             {...seleto("banco")}
           />
         </div>
-        <div className="grid grid-cols-[180px_1fr_200px] gap-form-gap">
+        <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-[180px_1fr_200px]">
           <FormFieldInput
             label="Agência"
             placeholder="0000"

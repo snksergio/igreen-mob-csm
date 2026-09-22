@@ -180,7 +180,7 @@ function CartaoDeBeneficiario({
             onChange={(e) => campo("chavePix", e.target.value)}
           />
         ) : (
-          <div className="grid grid-cols-2 gap-form-gap">
+          <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-2">
             <FormFieldInput
               label="Agência"
               placeholder="0001"

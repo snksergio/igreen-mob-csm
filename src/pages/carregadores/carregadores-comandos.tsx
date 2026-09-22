@@ -64,7 +64,9 @@ function Ajuda({ texto }: { texto: string }) {
       <TooltipTrigger asChild>
         <button
           type="button"
-          className="rounded-radius-full text-fg-subtle transition-colors hover:text-fg-default focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring-brand"
+          /* Mesma receita do `-m-pad-md p-pad-md` usada no ícone de ajuda da
+             Performance: área de toque maior sem deslocar o rótulo ao lado. */
+          className="-m-pad-md rounded-radius-full p-pad-md text-fg-subtle transition-colors hover:text-fg-default focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring-brand"
           aria-label="Ajuda"
         >
           <Info className="size-icon-sm" aria-hidden />

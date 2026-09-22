@@ -133,7 +133,7 @@ export function MotoristaDetailPanel({ motorista, onClose }: Props) {
             reproduza o mesmo template por dentro — sem ela, o valor da linha de tags sairia
             desalinhado do resto da ficha. */}
         <div
-          className="grid grid-cols-[var(--col-rotulo)_1fr] items-center gap-x-gp-md"
+          className="grid grid-cols-1 gap-x-gp-md gap-y-gp-2xs sm:grid-cols-[var(--col-rotulo)_1fr] sm:items-center"
           style={{ ["--col-rotulo" as string]: "192px" }}
         >
           <LinhaDeDispositivo
@@ -187,7 +187,7 @@ export function MotoristaDetailPanel({ motorista, onClose }: Props) {
             Atividade no período
           </span>
           <div
-            className="grid grid-cols-[var(--col-rotulo)_1fr] items-center gap-x-gp-md"
+            className="grid grid-cols-1 gap-x-gp-md gap-y-gp-2xs sm:grid-cols-[var(--col-rotulo)_1fr] sm:items-center"
             style={{ ["--col-rotulo" as string]: "192px" }}
           >
             <LinhaDeDispositivo

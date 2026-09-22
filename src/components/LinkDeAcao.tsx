@@ -32,7 +32,10 @@ export function LinkDeAcao({
       onClick={onClick}
       disabled={disabled}
       aria-label={ariaLabel}
-      className="rounded-radius-sm text-body-sm font-medium text-fg-brand underline underline-offset-2 transition-colors hover:text-fg-brand-hover focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring-brand disabled:cursor-not-allowed disabled:text-fg-subtle disabled:no-underline"
+      /* `-my-pad-md py-pad-md`: texto de 16px de altura é alvo de toque ruim no
+         celular (medido: 18px). O padding vertical leva a área sensível a ~40px e a
+         margem negativa devolve o espaço, então nenhuma linha se desloca. */
+      className="-my-pad-md rounded-radius-sm py-pad-md text-body-sm font-medium text-fg-brand underline underline-offset-2 transition-colors hover:text-fg-brand-hover focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring-brand disabled:cursor-not-allowed disabled:text-fg-subtle disabled:no-underline"
     >
       {children}
     </button>

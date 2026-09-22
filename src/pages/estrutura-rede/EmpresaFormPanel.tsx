@@ -126,7 +126,7 @@ export function EmpresaFormPanel({
       <SecaoDeFormulario titulo="Informações da empresa">
         {/* `gap-form-gap` (20px) e não `gap-gp-*`: é o token dedicado a espaço entre
             campos de formulário (L-024). Vale também nos grids internos. */}
-        <div className="grid grid-cols-2 gap-form-gap">
+        <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-2">
           <FormFieldInput
             label="Nome da empresa"
             required
@@ -152,7 +152,7 @@ export function EmpresaFormPanel({
 
         {/* CEP · Endereço · Número: o CEP vem PRIMEIRO porque é ele que, num sistema real,
             preenche os outros. A ordem do formulário ensina a ordem de digitar. */}
-        <div className="grid grid-cols-[180px_1fr_140px] gap-form-gap">
+        <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-[180px_1fr_140px]">
           <FormFieldInput
             label="CEP"
             placeholder="00000-000"
@@ -171,7 +171,7 @@ export function EmpresaFormPanel({
           />
         </div>
 
-        <div className="grid grid-cols-[1fr_180px_180px] gap-form-gap">
+        <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-[1fr_180px_180px]">
           <FormFieldInput label="Cidade" placeholder="Digite a cidade" {...campo("cidade")} />
           <FormFieldInput label="Estado" placeholder="UF" {...campo("estado")} />
           <FormFieldInput label="País" placeholder="País" {...campo("pais")} />
@@ -183,7 +183,7 @@ export function EmpresaFormPanel({
           {...campo("complemento")}
         />
 
-        <div className="grid grid-cols-2 gap-form-gap">
+        <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-2">
           <FormFieldInput
             label="Nome do responsável"
             required
@@ -201,7 +201,7 @@ export function EmpresaFormPanel({
       </SecaoDeFormulario>
 
       <SecaoDeFormulario titulo="Dados bancários">
-        <div className="grid grid-cols-2 gap-form-gap">
+        <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-2">
           <FormFieldInput
             label="Chave PIX"
             placeholder="CPF/CNPJ, celular, e-mail ou aleatória"
@@ -215,7 +215,7 @@ export function EmpresaFormPanel({
           />
         </div>
 
-        <div className="grid grid-cols-[180px_1fr_200px] gap-form-gap">
+        <div className="grid grid-cols-1 gap-form-gap sm:grid-cols-[180px_1fr_200px]">
           <FormFieldInput
             label="Agência"
             placeholder="0000"

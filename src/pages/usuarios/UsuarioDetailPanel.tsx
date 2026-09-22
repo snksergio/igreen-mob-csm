@@ -80,7 +80,7 @@ function Propriedade({
 /** Grade de duas colunas — rótulo fixo à esquerda, valor elástico à direita. */
 function Ficha({ children }: { children: ReactNode }) {
   return (
-    <div className="grid grid-cols-[180px_1fr] items-center gap-x-gp-md">
+    <div className="grid grid-cols-1 gap-x-gp-md gap-y-gp-2xs sm:grid-cols-[180px_1fr] sm:items-center">
       {children}
     </div>
   );

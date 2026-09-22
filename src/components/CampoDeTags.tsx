@@ -114,7 +114,10 @@ export function CampoDeTags({
               <button
                 type="button"
                 onClick={() => onChange(tags.filter((x) => x !== t))}
-                className="ml-gp-2xs rounded-radius-full text-fg-brand/70 transition-colors hover:text-fg-brand focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring-brand"
+                /* `-my-pad-md py-pad-md` só na vertical: o × mede 12px e some sob o
+                   dedo. Na horizontal o chip já é estreito e crescer a área invadiria a
+                   tag vizinha — errar para a tag errada é pior que errar para nada. */
+                className="-my-pad-md ml-gp-2xs rounded-radius-full py-pad-md text-fg-brand/70 transition-colors hover:text-fg-brand focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring-brand"
                 aria-label={`Remover a tag ${t}`}
               >
                 <X className="size-icon-2xs" aria-hidden />

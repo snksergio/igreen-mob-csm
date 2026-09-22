@@ -174,7 +174,7 @@ export function EmpresaDetailPanel({
       }
     >
       <FloatingPanelSection title="Empresa">
-        <div className="grid grid-cols-[160px_1fr] items-center gap-x-gp-md">
+        <div className="grid grid-cols-1 gap-x-gp-md gap-y-gp-2xs sm:grid-cols-[160px_1fr] sm:items-center">
           <Propriedade icone={Building2} label="Nome" valor={e.nome} />
           <Propriedade icone={Building2} label="CNPJ" valor={e.cnpj} />
           <Propriedade icone={MapPin} label="Endereço" valor={e.endereco} />

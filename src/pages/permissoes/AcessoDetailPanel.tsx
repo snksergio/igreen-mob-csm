@@ -172,7 +172,7 @@ export function AcessoDetailPanel({
       }
     >
       <FloatingPanelSection title="Acesso">
-        <div className="grid grid-cols-[180px_1fr] items-center gap-x-gp-md">
+        <div className="grid grid-cols-1 gap-x-gp-md gap-y-gp-2xs sm:grid-cols-[180px_1fr] sm:items-center">
           <Propriedade icone={Mail} label="E-mail" valor={a.email} />
           <Propriedade icone={Building2} label="Empresa" valor={a.empresa} />
           <Propriedade
