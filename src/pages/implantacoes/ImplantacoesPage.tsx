@@ -36,6 +36,9 @@ import {
 } from "./implantacoes-ui";
 import { ImplantacaoDetailPanel } from "./ImplantacaoDetailPanel";
 import { ImplantacaoFormPanel } from "./ImplantacaoFormPanel";
+import { PanelAssistente } from "./PanelAssistente";
+import { PanelCompacto } from "./PanelCompacto";
+import { PanelDuasColunas } from "./PanelDuasColunas";
 
 /**
  * Funil de implantação — Kanban e tabela sobre os mesmos dados.
@@ -204,6 +207,28 @@ function construirColunas(handlers: {
   ];
 }
 
+/**
+ * Três propostas de painel, uma por implantação, para comparar lado a lado.
+ *
+ * ⚠️ **Isto é um comparador, não arquitetura.** Ligar o desenho do painel ao ID do
+ * registro só faz sentido enquanto a escolha não foi feita; assim que uma proposta for
+ * aprovada, este mapa some e o painel escolhido vale para todas. Está aqui, e não atrás
+ * de um seletor na toolbar, porque comparar exige abrir os três sem configurar nada.
+ *
+ * | implantação | proposta | forma |
+ * |---|---|---|
+ * | Rede Boa Praça (`IMP-2026-001`) | **A** | cartão de status, uma coluna estreita |
+ * | Pousada Serra Azul (`IMP-2026-002`) | **B** | workspace em duas colunas, com abas |
+ * | Grupo Via Norte (`IMP-2026-003`) | **C** | assistente, uma etapa por vez |
+ *
+ * As outras onze continuam no painel atual — é o controle da comparação.
+ */
+const PROPOSTA_POR_IMPLANTACAO: Record<string, "a" | "b" | "c"> = {
+  "IMP-2026-001": "a",
+  "IMP-2026-002": "b",
+  "IMP-2026-003": "c",
+};
+
 /** Colunas do board — derivadas de `ETAPAS`, na ordem do funil. */
 const COLUNAS_DO_BOARD: KanbanColumn[] = ETAPAS.map((e) => ({
   id: e.id,
@@ -226,6 +251,7 @@ export function ImplantacoesPage() {
   /* Guardamos o ID, não o objeto: o painel precisa refletir a marcação do checklist
      feita dentro dele mesmo, e um objeto congelado no state mostraria o valor antigo. */
   const detalhe = implantacoes.find((i) => i.id === detalheId) ?? null;
+  const proposta = detalhe ? PROPOSTA_POR_IMPLANTACAO[detalhe.id] : undefined;
 
   const alternarItem = (impId: string, itemId: string) =>
     setImplantacoes((atual) =>
@@ -336,7 +362,7 @@ export function ImplantacoesPage() {
     <div className="flex min-h-0 flex-1 flex-col gap-gp-2xl">
       <PageHeader
         title="Implantações"
-        description={IMPLANTACOES_TEXTOS.aviso}
+        description={`${IMPLANTACOES_TEXTOS.aviso} · Três propostas de painel em teste: abra Rede Boa Praça (A), Pousada Serra Azul (B) ou Grupo Via Norte (C).`}
         badge={
           <Chip color="neutral" variant="soft" size="sm" shape="rounded">
             {total} no funil · {emAtraso} {emAtraso === 1 ? "atrasada" : "atrasadas"}
@@ -486,17 +512,55 @@ export function ImplantacoesPage() {
         }}
       />
 
-      <ImplantacaoDetailPanel
-        implantacao={detalhe}
-        onClose={() => setDetalheId(null)}
-        onAlternarItem={(itemId) => detalhe && alternarItem(detalhe.id, itemId)}
-        onMoverEtapa={(etapa) => detalhe && moverEtapa(detalhe, etapa)}
-        onEditar={abrirEdicao}
-        onExcluir={(i) => {
-          setDetalheId(null);
-          setAExcluir(i);
-        }}
-      />
+      {/* ⚠️ Cada proposta é um componente próprio e monta só quando é a vez dela. Um
+          painel único com prop `variant` teria os três layouts no mesmo arquivo, e a
+          comparação ficaria refém de quem consegue ler condicional aninhada. */}
+      {detalhe && proposta === "a" && (
+        <PanelCompacto
+          implantacao={detalhe}
+          onClose={() => setDetalheId(null)}
+          onMoverEtapa={(etapa) => moverEtapa(detalhe, etapa)}
+          onEditar={abrirEdicao}
+          onExcluir={(i) => {
+            setDetalheId(null);
+            setAExcluir(i);
+          }}
+        />
+      )}
+      {detalhe && proposta === "b" && (
+        <PanelDuasColunas
+          implantacao={detalhe}
+          onClose={() => setDetalheId(null)}
+          onAlternarItem={(itemId) => alternarItem(detalhe.id, itemId)}
+          onMoverEtapa={(etapa) => moverEtapa(detalhe, etapa)}
+          onEditar={abrirEdicao}
+          onExcluir={(i) => {
+            setDetalheId(null);
+            setAExcluir(i);
+          }}
+        />
+      )}
+      {detalhe && proposta === "c" && (
+        <PanelAssistente
+          implantacao={detalhe}
+          onClose={() => setDetalheId(null)}
+          onAlternarItem={(itemId) => alternarItem(detalhe.id, itemId)}
+          onMoverEtapa={(etapa) => moverEtapa(detalhe, etapa)}
+        />
+      )}
+      {!proposta && (
+        <ImplantacaoDetailPanel
+          implantacao={detalhe}
+          onClose={() => setDetalheId(null)}
+          onAlternarItem={(itemId) => detalhe && alternarItem(detalhe.id, itemId)}
+          onMoverEtapa={(etapa) => detalhe && moverEtapa(detalhe, etapa)}
+          onEditar={abrirEdicao}
+          onExcluir={(i) => {
+            setDetalheId(null);
+            setAExcluir(i);
+          }}
+        />
+      )}
 
       <ImplantacaoFormPanel
         implantacao={emEdicao}
