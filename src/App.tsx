@@ -21,6 +21,7 @@ import { MinhaContaPage } from "~/pages/minha-conta/MinhaContaPage";
 import { AlertasPage } from "~/pages/alertas/AlertasPage";
 import { CuponsPage } from "~/pages/cupons/CuponsPage";
 import { MotoristasPage } from "~/pages/motoristas/MotoristasPage";
+import { ImplantacoesPage } from "~/pages/implantacoes/ImplantacoesPage";
 import { LoginPage } from "~/pages/login/LoginPage";
 import { Toaster } from "@snksergio/design-system/shadcn";
 import { useTheme, type Theme } from "@snksergio/design-system";
@@ -89,7 +90,7 @@ export function App() {
             setPage("dashboard");
           }}
         />
-        <Toaster />
+        <Toaster position="bottom-left" />
       </>
     );
   }
@@ -146,6 +147,8 @@ export function App() {
         <CuponsPage />
       ) : page === "motoristas" ? (
         <MotoristasPage />
+      ) : page === "implantacoes" ? (
+        <ImplantacoesPage />
       ) : (
         <PlaceholderPage page={page} />
       )}
@@ -153,8 +156,19 @@ export function App() {
       {/* ⚠️ Um `<Toaster />` por árvore, montado UMA vez — é requisito do componente:
           sem ele, `toast(...)` não erra, só não aparece nada. Mora dentro do
           `AppShell` (e não acima dele) porque o portal do Sonner segue o tema, e o
-          tema é aplicado na raiz do shell. */}
-      <Toaster />
+          tema é aplicado na raiz do shell.
+
+          ⚠️ `bottom-left` e não o canto inferior DIREITO do default: é exatamente ali
+          que mora o botão primário de todo painel flutuante, e o toast cobria o
+          "Avançar etapa" logo depois de a pessoa marcar o checklist — o aviso tapava a
+          ação que ele estava anunciando. À esquerda ele cai sobre o rail, que não tem
+          ação urgente.
+
+          ⚠️ Sem `closeButton`: a prop é do toast estilizado do Sonner e **não faz nada**
+          com o card do DS (`data-styled="false"`) — medido. Por que o projeto ficou sem
+          X nenhum está no JSDoc de `components/feedback.ts`: as duas formas de obtê-lo
+          desenham o botão e não dispensam o toast. */}
+      <Toaster position="bottom-left" />
     </AppShell>
   );
 }

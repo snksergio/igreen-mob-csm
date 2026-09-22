@@ -4,6 +4,7 @@ import {
   Gauge,
   LayoutDashboard,
   PlugZap,
+  Route,
   Settings,
   Tag,
   Ticket,
@@ -35,6 +36,7 @@ export type PageId =
   | "monitoramento"
   | "cupons"
   | "permissoes"
+  | "implantacoes"
   | "motoristas"
   | "estrutura-rede"
   | "locais"
@@ -67,6 +69,7 @@ export const PAGE_LABELS: Record<PageId, string> = {
   cupons: "Cupons",
   permissoes: "Permissões",
   motoristas: "Motoristas",
+  implantacoes: "Implantações",
   "estrutura-rede": "Estrutura da rede",
   locais: "Locais",
   usuarios: "Usuários",
@@ -153,6 +156,19 @@ export const NAV_CATEGORIES: SingleMenuCategory[] = [
   { id: "precos", icon: <Tag />, label: "Preços", href: "#precos" },
   { id: "cupons", icon: <Ticket />, label: "Cupons", href: "#cupons" },
   { id: "motoristas", icon: <Users />, label: "Motoristas", href: "#motoristas" },
+  /**
+   * `Implantações` — o funil de um ponto novo, da proposta à instalação.
+   *
+   * ⚠️ **Não entrou em Financeiro**, que era a primeira ideia. Financeiro é o dinheiro
+   * que já circula (Repasses, Splits); aqui PAGAMENTO é UMA das sete etapas, não o
+   * assunto. Também não entrou em Infraestrutura: lá mora equipamento que já existe, e
+   * uma implantação em Proposta não tem equipamento nenhum.
+   *
+   * Fica solta no topo, sem grupo, pelo motivo que o próprio menu já registra: grupo de
+   * um não separa nada. Quando aparecer a segunda tela do assunto (metas comerciais,
+   * carteira), viram grupo "Comercial".
+   */
+  { id: "implantacoes", icon: <Route />, label: "Implantações", href: "#implantacoes" },
   /**
    * `Configurações` recebeu dois itens que estavam soltos no topo:
    *
