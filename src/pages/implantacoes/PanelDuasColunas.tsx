@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { Clock, MapPin, Zap } from "lucide-react";
-import { Avatar, Chip, FloatingPanel } from "@snksergio/design-system";
+import {
+  Avatar,
+  Button,
+  Chip,
+  FloatingPanel,
+  FloatingPanelSection,
+} from "@snksergio/design-system";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@snksergio/design-system/shadcn";
 import { corDoAvatar, iniciais } from "~/pages/motoristas/motoristas-ui";
 import {
@@ -13,60 +19,44 @@ import {
   indiceDaEtapa,
   moeda,
   potencia,
-  progressoDaEtapa,
   progressoGeral,
   type EtapaId,
   type Implantacao,
 } from "./implantacoes-mock";
-import { ChipDeSituacao } from "./implantacoes-ui";
+import { ChipDeSituacao, TrilhaDeEtapas } from "./implantacoes-ui";
 import {
+  AcoesDeCabecalho,
   AcoesDeEtapa,
-  BlocoDeCadastro,
   BlocoDePrazos,
   BlocoDoPonto,
+  BotoesDeEtapa,
   ChecklistDaEtapa,
   PassosCompactos,
-  TituloDeSecao,
   contadorDaEtapa,
 } from "./implantacoes-blocos";
 
 /**
  * **Proposta B — duas colunas.** Larga, para trabalhar a implantação.
  *
- * ## O que a segunda rodada mudou
+ * ## O que a terceira rodada mudou
  *
  * | pedido do operador | o que virou |
  * |---|---|
- * | "os steps ficaram feios, com scroll; usar os da proposta 1" | a esteira de chevrons saiu; entrou o `PassosCompactos` |
- * | "usar as abas que a gente já usa no painel" | `Tabs` do DS (`segmented`, `fullWidth`) no lugar das abas sublinhadas na unha |
- * | "a esquerda ficou compacta demais e feia" | virou um painel dentro do painel: seções com título, respiro e divisória |
- * | "no checklist faltou prosseguir e voltar" | `AcoesDeEtapa` fecha a aba |
- *
- * ## A esteira de chevrons não volta
- *
- * Ela desenha bem com quatro etapas, que é o caso da referência. Com sete, cada chevron
- * carrega um rótulo escrito e o conjunto passa de 900px — vira barra de rolagem
- * horizontal. Rolar para descobrir onde se está é o oposto do que um indicador de
- * progresso serve.
+ * | "o nome ficou com fonte grande; manter o padrão do header das outras telas" | `titleSlot` no formato de sempre: nome, subtítulo e chips — e nada de `heading` dentro da coluna |
+ * | "editar e excluir no header, seguindo o padrão do panel" | foram para o `headerActions`, que é o slot do DS entre o título e o X |
+ * | "a esquerda ficou espremida; usar as seções colapsáveis do painel" | 384px e `FloatingPanelSection` de verdade, com chevron |
+ * | "o cadastro não precisa ficar ali; deixar as ações no rodapé" | rodapé com Fechar + Voltar + Avançar; o bloco de aviso ficou só com o texto |
+ * | "não precisa o 1. no centro da barra" | a faixa passou a dizer o nome da etapa e "Etapa 2 de 7" |
+ * | "no histórico, manter o design de timeline" | `TrilhaDeEtapas`, a mesma da proposta D |
+ * | "o detalhamento ficou jogado" | virou `FloatingPanelSection`, igual ao resto do produto |
+ * | "não precisa do divider embaixo do cabeçalho da etapa" | as abas já separam; a borda saiu |
  */
 
 type AbaId = "checklist" | "historico" | "dados";
 
-/** Seção da coluna esquerda — mesma anatomia do `FloatingPanelSection`, sem o painel. */
-function Secao({ titulo, children }: { titulo: string; children: React.ReactNode }) {
-  return (
-    <section className="flex flex-col gap-gp-lg border-b border-border-subtle px-pad-3xl py-pad-2xl last:border-b-0">
-      <span className="text-caption-md font-semibold uppercase tracking-wide text-fg-subtle">
-        {titulo}
-      </span>
-      {children}
-    </section>
-  );
-}
-
 function Dado({ label, valor }: { label: string; valor: React.ReactNode }) {
   return (
-    <div className="flex items-baseline justify-between gap-gp-md">
+    <div className="flex items-baseline justify-between gap-gp-md py-pad-sm">
       <span className="shrink-0 text-body-sm text-fg-muted">{label}</span>
       <span className="min-w-0 text-right text-body-sm text-fg-default">{valor}</span>
     </div>
@@ -96,22 +86,42 @@ export function PanelDuasColunas({
       open
       onOpenChange={(v) => !v && onClose()}
       side="right"
-      size={1120}
+      size={1180}
       resizable
       maximizable
-      resizableMinWidth={880}
+      resizableMinWidth={920}
       resizableStorageKey="igreen-mob-cms.implantacao.duas-colunas.width"
       bodyPadded={false}
       titleSlot={
-        <div className="flex min-w-0 flex-1 items-center gap-gp-lg">
+        <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
           <span className="truncate text-body-md font-semibold text-fg-default">
             {imp.cliente}
           </span>
-          <span className="shrink-0 text-body-xs font-normal tabular-nums text-fg-muted">
-            {imp.id}
+          <span className="flex min-w-0 flex-wrap items-center gap-gp-sm text-body-xs font-normal text-fg-muted">
+            <span className="shrink-0 tabular-nums">{imp.id}</span>
+            <span className="shrink-0 opacity-50">·</span>
+            <span className="truncate">{imp.local}</span>
+            <ChipDeSituacao implantacao={imp} />
           </span>
-          <ChipDeSituacao implantacao={imp} />
         </div>
+      }
+      /* ⚠️ `headerActions` é o slot do DS entre o título e o X — é ele que garante o
+         alinhamento vertical com o botão de fechar. Montar os botões dentro do
+         `titleSlot`, como fiz antes, os deixava fora de registro. */
+      headerActions={
+        <AcoesDeCabecalho
+          implantacao={imp}
+          onEditar={onEditar}
+          onExcluir={onExcluir}
+        />
+      }
+      footer={
+        <>
+          <Button variant="outline" color="secondary" size="sm" onClick={onClose}>
+            Fechar
+          </Button>
+          <BotoesDeEtapa implantacao={imp} onMover={onMoverEtapa} />
+        </>
       }
     >
       {/* ⚠️ `h-full` e não `flex-1`: o corpo do `FloatingPanel` é container de SCROLL, não
@@ -119,33 +129,32 @@ export function PanelDuasColunas({
           painel de 852, medido). Abaixo de `lg` volta a `h-auto`, senão o empilhado seria
           cortado em vez de rolar. */}
       <div className="flex h-auto flex-col lg:h-full lg:flex-row lg:overflow-hidden">
-        {/* ══ Coluna de identidade — um painel dentro do painel ═══════════════ */}
-        <aside className="scrollbar-thin flex shrink-0 flex-col overflow-y-auto border-b border-border-default lg:w-[344px] lg:border-b-0 lg:border-r">
-          <div className="flex flex-col gap-gp-md border-b border-border-subtle px-pad-3xl py-pad-3xl">
-            <span className="text-heading-xs font-bold leading-tight text-fg-default">
-              {imp.cliente}
-            </span>
-            <span className="flex items-start gap-gp-sm text-body-sm text-fg-muted">
+        {/* ══ Coluna de identidade — seções do próprio DS, colapsáveis ═══════ */}
+        <aside className="scrollbar-thin flex shrink-0 flex-col overflow-y-auto border-b border-border-default lg:w-[384px] lg:border-b-0 lg:border-r">
+          <div className="flex flex-col gap-gp-md border-b border-border-default px-pad-4xl py-pad-2xl">
+            <span className="flex items-start gap-gp-sm text-body-sm text-fg-default">
               <MapPin className="mt-[2px] size-icon-sm shrink-0 text-fg-subtle" aria-hidden />
-              <span className="min-w-0 break-words">
+              <span className="min-w-0 break-words font-medium">
                 {imp.local}
-                <span className="block text-caption-sm">
+                <span className="block text-caption-sm font-normal text-fg-muted">
                   {imp.cidade} · {imp.uf}
                 </span>
               </span>
             </span>
             <span className="flex flex-wrap gap-gp-sm">
-              <Chip color="neutral" variant="soft" size="sm" shape="rounded">
-                <span className="tabular-nums">{imp.id}</span>
-              </Chip>
               <Chip color="primary" variant="soft" size="sm" shape="rounded">
                 {indiceDaEtapa(imp.etapa) + 1} de {ETAPAS.length} ·{" "}
                 {ETAPA_POR_ID[imp.etapa].label}
               </Chip>
+              <Chip color="neutral" variant="soft" size="sm" shape="rounded">
+                <span className="tabular-nums">
+                  {Math.round(progressoGeral(imp) * 100)}% do funil
+                </span>
+              </Chip>
             </span>
           </div>
 
-          <Secao titulo="Investimento">
+          <FloatingPanelSection title="Investimento">
             <div className="flex flex-col gap-gp-sm">
               <span className="text-stat-sm font-bold tabular-nums text-fg-default">
                 {moeda(imp.investimento)}
@@ -155,10 +164,10 @@ export function PanelDuasColunas({
                 {imp.pontos} × {potencia(imp.potenciaKw)}
               </span>
             </div>
-          </Secao>
+          </FloatingPanelSection>
 
-          <Secao titulo="Condução">
-            <div className="flex flex-col gap-gp-lg">
+          <FloatingPanelSection title="Condução">
+            <div className="flex flex-col">
               <Dado
                 label="Responsável"
                 valor={
@@ -194,9 +203,9 @@ export function PanelDuasColunas({
                 }
               />
             </div>
-          </Secao>
+          </FloatingPanelSection>
 
-          <Secao titulo="Progresso do funil">
+          <FloatingPanelSection title="Progresso do funil">
             <div className="flex flex-col gap-gp-md">
               <div className="flex items-baseline justify-between gap-gp-md">
                 <span className="text-body-sm text-fg-muted">Itens cumpridos</span>
@@ -213,30 +222,20 @@ export function PanelDuasColunas({
                 />
               </span>
             </div>
-          </Secao>
+          </FloatingPanelSection>
 
           {imp.observacao && (
-            <Secao titulo="Observação">
+            <FloatingPanelSection title="Observação">
               <p className="text-body-sm leading-relaxed text-fg-muted">{imp.observacao}</p>
-            </Secao>
+            </FloatingPanelSection>
           )}
-
-          <Secao titulo="Cadastro">
-            <BlocoDeCadastro implantacao={imp} onEditar={onEditar} onExcluir={onExcluir} />
-          </Secao>
         </aside>
 
         {/* ══ Coluna de trabalho ═════════════════════════════════════════════ */}
         <section className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <div className="flex flex-col gap-gp-lg border-b border-border-default px-pad-4xl py-pad-2xl">
-            <div className="flex flex-col gap-[2px]">
-              <span className="text-body-md font-semibold text-fg-default">
-                {ETAPA_POR_ID[imp.etapa].label}
-              </span>
-              <span className="text-caption-md text-fg-muted">
-                {ETAPA_POR_ID[imp.etapa].resumo}
-              </span>
-            </div>
+          {/* Sem `border-b`: as abas logo abaixo já separam visualmente, e duas linhas
+              coladas leem como moldura. */}
+          <div className="px-pad-4xl pb-pad-lg pt-pad-3xl">
             <PassosCompactos implantacao={imp} />
           </div>
 
@@ -244,7 +243,7 @@ export function PanelDuasColunas({
             value={aba}
             onValueChange={(v) => setAba(v as AbaId)}
             fullWidth
-            className="flex min-h-0 flex-1 flex-col px-pad-4xl pt-pad-2xl"
+            className="flex min-h-0 flex-1 flex-col px-pad-4xl"
           >
             <TabsList>
               <TabsTrigger value="checklist">
@@ -258,70 +257,42 @@ export function PanelDuasColunas({
               value="checklist"
               className="scrollbar-thin flex min-h-0 flex-1 flex-col gap-gp-xl overflow-y-auto pb-pad-3xl pt-pad-2xl"
             >
+              <div className="flex flex-col gap-[2px]">
+                <span className="text-body-md font-semibold text-fg-default">
+                  {ETAPA_POR_ID[imp.etapa].label}
+                </span>
+                <span className="text-caption-md leading-snug text-fg-muted">
+                  {ETAPA_POR_ID[imp.etapa].resumo}
+                </span>
+              </div>
               <ChecklistDaEtapa
                 implantacao={imp}
                 etapa={imp.etapa}
                 onAlternar={onAlternarItem}
                 variante="cartao"
               />
-              <AcoesDeEtapa implantacao={imp} onMover={onMoverEtapa} />
+              {/* Só o aviso: voltar e avançar moram no rodapé deste painel. */}
+              <AcoesDeEtapa implantacao={imp} onMover={onMoverEtapa} somenteAviso />
             </TabsContent>
 
             <TabsContent
               value="historico"
               className="scrollbar-thin min-h-0 flex-1 overflow-y-auto pb-pad-3xl pt-pad-2xl"
             >
-              <ol className="flex flex-col gap-gp-md">
-                {ETAPAS.map((e, i) => {
-                  const { feitos, total } = progressoDaEtapa(imp, e.id);
-                  const ehAtual = i === indiceDaEtapa(imp.etapa);
-                  return (
-                    <li
-                      key={e.id}
-                      className={`flex items-center justify-between gap-gp-lg rounded-radius-lg border px-pad-2xl py-pad-xl ${
-                        ehAtual
-                          ? "border-border-brand bg-bg-brand-subtle"
-                          : "border-border-subtle bg-bg-surface"
-                      }`}
-                    >
-                      <span className="flex min-w-0 items-center gap-gp-lg">
-                        <span
-                          className="size-[8px] shrink-0 rounded-radius-full"
-                          style={{ backgroundColor: e.cor }}
-                          aria-hidden
-                        />
-                        <span className="flex min-w-0 flex-col">
-                          <span className="text-body-sm font-medium text-fg-default">
-                            {i + 1}. {e.label}
-                          </span>
-                          <span className="text-caption-sm text-fg-muted">{e.resumo}</span>
-                        </span>
-                      </span>
-                      <span
-                        className={`shrink-0 text-caption-md tabular-nums ${
-                          feitos === total ? "text-fg-success" : "text-fg-subtle"
-                        }`}
-                      >
-                        {feitos}/{total}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ol>
+              {/* Timeline, não cartões numerados — o desenho que o operador aprovou. */}
+              <TrilhaDeEtapas implantacao={imp} />
             </TabsContent>
 
             <TabsContent
               value="dados"
-              className="scrollbar-thin flex min-h-0 flex-1 flex-col gap-gp-3xl overflow-y-auto pb-pad-3xl pt-pad-2xl"
+              className="scrollbar-thin -mx-pad-4xl min-h-0 flex-1 overflow-y-auto pb-pad-3xl"
             >
-              <div className="flex flex-col gap-gp-lg">
-                <TituloDeSecao>O ponto</TituloDeSecao>
+              <FloatingPanelSection title="O ponto">
                 <BlocoDoPonto implantacao={imp} />
-              </div>
-              <div className="flex flex-col gap-gp-lg">
-                <TituloDeSecao>Prazos e responsável</TituloDeSecao>
+              </FloatingPanelSection>
+              <FloatingPanelSection title="Prazos e responsável">
                 <BlocoDePrazos implantacao={imp} />
-              </div>
+              </FloatingPanelSection>
             </TabsContent>
           </Tabs>
         </section>

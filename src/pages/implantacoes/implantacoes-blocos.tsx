@@ -52,24 +52,36 @@ export function PassosCompactos({
   const atual = indiceDaEtapa(implantacao.etapa);
   return (
     <div className={`flex flex-col gap-gp-md ${className}`}>
-      <div className="flex gap-gp-xs" role="img" aria-label={`Etapa ${atual + 1} de 7`}>
+      {/* ⚠️ Sem os rótulos de borda (`Proposta … Instalação`) e sem o "1." no meio. O
+          operador leu o número central como um valor solto — e ele competia com o nome
+          da etapa, que é a única coisa que essa faixa precisa afirmar. Quem quer a lista
+          inteira tem a aba Histórico; aqui só interessa ONDE se está. */}
+      <div className="flex items-baseline justify-between gap-gp-md">
+        <span className="min-w-0 truncate text-body-sm font-semibold text-fg-default">
+          {ETAPA_POR_ID[implantacao.etapa].label}
+        </span>
+        <span className="shrink-0 text-caption-sm tabular-nums text-fg-muted">
+          Etapa {atual + 1} de {ETAPAS.length}
+        </span>
+      </div>
+      <div
+        className="flex gap-gp-xs"
+        role="img"
+        aria-label={`Etapa ${atual + 1} de ${ETAPAS.length}: ${ETAPA_POR_ID[implantacao.etapa].label}`}
+      >
         {ETAPAS.map((e, i) => (
           <span
             key={e.id}
-            title={e.label}
+            title={`${i + 1}. ${e.label}`}
             className={`h-[6px] flex-1 rounded-radius-full ${
               i <= atual ? "bg-bg-brand" : "bg-bg-muted"
             }`}
           />
         ))}
       </div>
-      <div className="flex items-baseline justify-between gap-gp-md text-caption-sm">
-        <span className="truncate text-fg-subtle">{ETAPAS[0].label}</span>
-        <span className="shrink-0 font-semibold text-fg-brand">
-          {atual + 1}. {ETAPA_POR_ID[implantacao.etapa].label}
-        </span>
-        <span className="truncate text-fg-subtle">{ETAPAS[ETAPAS.length - 1].label}</span>
-      </div>
+      <span className="text-caption-sm leading-snug text-fg-muted">
+        {ETAPA_POR_ID[implantacao.etapa].resumo}
+      </span>
     </div>
   );
 }
@@ -182,9 +194,12 @@ export function ChecklistDaEtapa({
 export function AcoesDeEtapa({
   implantacao,
   onMover,
+  somenteAviso = false,
 }: {
   implantacao: Implantacao;
   onMover: (e: EtapaId) => void;
+  /** Sem botões — para painéis que levam voltar/avançar para o rodapé. */
+  somenteAviso?: boolean;
 }) {
   const proxima = proximaEtapa(implantacao.etapa);
   const anterior = etapaAnterior(implantacao.etapa);
@@ -213,6 +228,7 @@ export function AcoesDeEtapa({
               ? `Falta: ${pendentes[0].texto}.`
               : `Faltam ${pendentes.length} itens obrigatórios.`}
       </p>
+      {!somenteAviso && (
       <div className="flex shrink-0 flex-wrap gap-gp-md">
         <Button
           variant="outline"
@@ -235,7 +251,93 @@ export function AcoesDeEtapa({
           {proxima ? `Avançar para ${ETAPA_POR_ID[proxima].label}` : "Última etapa"}
         </Button>
       </div>
+      )}
     </div>
+  );
+}
+
+/**
+ * Voltar + avançar para o RODAPÉ do painel.
+ *
+ * O rodapé do `FloatingPanel` é onde o produto inteiro põe ação primária. Quando o
+ * painel tem rodapé, é lá que os dois botões moram, e o bloco de aviso fica só com o
+ * texto (`AcoesDeEtapa somenteAviso`) — dois pares de botões dizendo a mesma coisa em
+ * telas diferentes é o que faz o operador procurar qual é o de verdade.
+ */
+export function BotoesDeEtapa({
+  implantacao,
+  onMover,
+}: {
+  implantacao: Implantacao;
+  onMover: (e: EtapaId) => void;
+}) {
+  const proxima = proximaEtapa(implantacao.etapa);
+  const anterior = etapaAnterior(implantacao.etapa);
+  const avanca = podeAvancar(implantacao);
+  return (
+    <>
+      <Button
+        variant="outline"
+        color="secondary"
+        size="sm"
+        iconLeft={<ArrowLeft />}
+        disabled={!anterior}
+        onClick={() => anterior && onMover(anterior)}
+      >
+        Voltar etapa
+      </Button>
+      <Button
+        variant="filled"
+        color="primary"
+        size="sm"
+        iconRight={avanca ? <ArrowRight /> : <Lock />}
+        disabled={!proxima || !avanca}
+        onClick={() => proxima && onMover(proxima)}
+      >
+        {proxima ? `Avançar para ${ETAPA_POR_ID[proxima].label}` : "Última etapa"}
+      </Button>
+    </>
+  );
+}
+
+/**
+ * Editar + excluir como ícones, para o `headerActions` do `FloatingPanel`.
+ *
+ * ⚠️ É esse o slot do DS para ações de cabeçalho — fica entre o `titleSlot` e o X, e é
+ * ele que garante o alinhamento vertical com o botão de fechar. Montar os dois botões
+ * dentro do `titleSlot`, como fiz na primeira rodada, deixava-os fora de registro assim
+ * que o título passava de uma linha.
+ */
+export function AcoesDeCabecalho({
+  implantacao,
+  onEditar,
+  onExcluir,
+}: {
+  implantacao: Implantacao;
+  onEditar: (i: Implantacao) => void;
+  onExcluir: (i: Implantacao) => void;
+}) {
+  return (
+    <>
+      <Button
+        variant="outline"
+        color="secondary"
+        size="sm"
+        iconLeft={<Pencil />}
+        aria-label="Editar dados"
+        title="Editar dados"
+        onClick={() => onEditar(implantacao)}
+      />
+      <Button
+        variant="outline"
+        color="critical"
+        size="sm"
+        iconLeft={<Trash2 />}
+        aria-label="Excluir implantação"
+        title="Excluir implantação"
+        onClick={() => onExcluir(implantacao)}
+      />
+    </>
   );
 }
 

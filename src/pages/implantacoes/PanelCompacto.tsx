@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, Pencil, Trash2 } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Button, FloatingPanel, FloatingPanelSection } from "@snksergio/design-system";
 import {
   ETAPAS,
@@ -11,6 +11,7 @@ import {
 } from "./implantacoes-mock";
 import { ChipDeSituacao } from "./implantacoes-ui";
 import {
+  AcoesDeCabecalho,
   AcoesDeEtapa,
   BlocoDeCadastro,
   BlocoDePrazos,
@@ -66,42 +67,23 @@ export function PanelCompacto({
       resizable
       resizableStorageKey="igreen-mob-cms.implantacao.compacto.width"
       titleSlot={
-        /* ⚠️ `items-center`, não `items-start`: o X do `FloatingPanel` é centralizado
-           verticalmente no cabeçalho, e com `items-start` os nossos dois ícones subiam e
-           saíam de registro com ele assim que o título ganhava duas linhas. O `truncate`
-           impede que o título chegue a duas linhas. */
-        <div className="flex min-w-0 flex-1 items-center justify-between gap-gp-lg">
-          <div className="flex min-w-0 flex-col gap-[3px]">
-            <span className="truncate text-body-md font-semibold text-fg-default">
-              {imp.cliente}
-            </span>
-            <span className="flex min-w-0 items-center gap-gp-sm text-caption-md font-normal text-fg-muted">
-              <span className="shrink-0 tabular-nums">{imp.id}</span>
-              <span className="shrink-0 opacity-50">·</span>
-              <ChipDeSituacao implantacao={imp} />
-            </span>
-          </div>
-          <div className="flex shrink-0 items-center gap-gp-sm">
-            <Button
-              variant="outline"
-              color="secondary"
-              size="sm"
-              iconLeft={<Pencil />}
-              aria-label="Editar dados"
-              title="Editar dados"
-              onClick={() => onEditar(imp)}
-            />
-            <Button
-              variant="outline"
-              color="critical"
-              size="sm"
-              iconLeft={<Trash2 />}
-              aria-label="Excluir implantação"
-              title="Excluir implantação"
-              onClick={() => onExcluir(imp)}
-            />
-          </div>
+        <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
+          <span className="truncate text-body-md font-semibold text-fg-default">
+            {imp.cliente}
+          </span>
+          <span className="flex min-w-0 flex-wrap items-center gap-gp-sm text-body-xs font-normal text-fg-muted">
+            <span className="shrink-0 tabular-nums">{imp.id}</span>
+            <span className="shrink-0 opacity-50">·</span>
+            <span className="truncate">{imp.local}</span>
+            <ChipDeSituacao implantacao={imp} />
+          </span>
         </div>
+      }
+      /* ⚠️ `headerActions` é o slot do DS para isto — entre o título e o X. Na primeira
+         rodada eu montei os dois botões DENTRO do `titleSlot`, e eles saíam de registro
+         com o X assim que o título passava de uma linha. */
+      headerActions={
+        <AcoesDeCabecalho implantacao={imp} onEditar={onEditar} onExcluir={onExcluir} />
       }
       footer={
         <Button variant="outline" color="secondary" size="sm" onClick={onClose}>
