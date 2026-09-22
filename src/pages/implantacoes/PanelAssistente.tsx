@@ -6,9 +6,7 @@ import {
   FloatingPanel,
   FormFieldTextarea,
 } from "@snksergio/design-system";
-import { Checkbox } from "@snksergio/design-system/shadcn";
 import {
-  CHECKLIST_POR_ETAPA,
   ETAPAS,
   ETAPA_POR_ID,
   dataCurta,
@@ -22,42 +20,32 @@ import {
   type EtapaId,
   type Implantacao,
 } from "./implantacoes-mock";
+import {
+  BlocoDePrazos,
+  BlocoDoPonto,
+  ChecklistDaEtapa,
+  TituloDeSecao,
+} from "./implantacoes-blocos";
 
 /**
- * **Proposta C — assistente por etapa.** Uma etapa por vez, com navegação de passo.
+ * **Proposta C — assistente por etapa.** Uma etapa por vez.
  *
- * ## A ideia
+ * ## O que a segunda rodada mudou
  *
- * As outras duas propostas mostram o funil inteiro e deixam a pessoa escolher onde
- * mexer. Esta faz o oposto: **a tela só mostra a etapa aberta**, e o resto do painel é
- * navegação. É a leitura mais próxima de um formulário guiado — serve a quem executa a
- * implantação passo a passo e não quer decidir onde clicar.
+ * | pedido do operador | o que virou |
+ * |---|---|
+ * | "os steps ficaram muito grandes, com toda a escrita" | virou fita de bolinhas numeradas; só o passo aberto tem rótulo, embaixo |
+ * | "não traz as informações" | ficha do ponto e dos prazos entram no fim, depois do checklist |
+ * | "o checklist de selecionar ficou ok" | mantido igual, na variante de cartão com o chip de obrigatório |
  *
- * ## O que resolve
+ * ## Por que o rótulo sai das bolinhas
  *
- * "Separar o que é step do que é informativo" fica literal aqui: a **faixa numerada no
- * topo é a única coisa que fala de etapa**, e o miolo nunca mistura as duas naturezas.
- * A ficha do ponto vira uma tira compacta de três dados, e não uma seção — quem está
- * cumprindo checklist não precisa do cadastro competindo por atenção.
- *
- * ## O custo
- *
- * Não dá para ver duas etapas ao mesmo tempo, e o cadastro completo não está aqui. É
- * deliberado: um assistente que mostra tudo deixa de ser assistente.
+ * Sete passos com "PASSO 3 / Viabilidade / 2 de 4" empilhados debaixo de cada círculo
+ * davam 104px por passo — 728px de fita numa área de 820, com rolagem horizontal e a
+ * faixa mais alta que o conteúdo que ela indexa. Com 36px por bolinha a fita inteira
+ * cabe em 330px, e o nome do passo aberto aparece uma vez só, em destaque, no miolo.
  */
-
-/** Rótulos curtos — sete nomes inteiros não cabem numa faixa de passos. */
-const CURTO: Record<EtapaId, string> = {
-  proposta: "Proposta",
-  aceite: "Aceite",
-  viabilidade: "Viabilidade",
-  contrato: "Contrato",
-  pagamento: "Pagamento",
-  projeto: "Projeto",
-  instalacao: "Instalação",
-};
-
-function FaixaDePassos({
+function FitaDePassos({
   implantacao,
   vista,
   onIr,
@@ -70,10 +58,7 @@ function FaixaDePassos({
   const iVista = indiceDaEtapa(vista);
 
   return (
-    <ol
-      className="scrollbar-thin flex items-start gap-0 overflow-x-auto pb-pad-sm"
-      aria-label="Passos da implantação"
-    >
+    <ol className="flex items-center justify-center" aria-label="Passos da implantação">
       {ETAPAS.map((etapa, i) => {
         const cumprida = i < atual;
         const ehAtual = i === atual;
@@ -82,52 +67,32 @@ function FaixaDePassos({
         const { feitos, total } = progressoDaEtapa(implantacao, etapa.id);
 
         return (
-          <li key={etapa.id} className="flex min-w-0 shrink-0 items-start">
+          <li key={etapa.id} className="flex items-center">
             <button
               type="button"
               disabled={!alcancavel}
               onClick={() => alcancavel && onIr(etapa.id)}
-              className={`flex w-[104px] flex-col items-center gap-gp-sm rounded-radius-md px-pad-sm py-pad-md transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring-brand ${
-                alcancavel ? "hover:bg-bg-muted" : "cursor-not-allowed"
+              aria-current={selecionada ? "step" : undefined}
+              title={`${i + 1}. ${etapa.label} — ${feitos}/${total}`}
+              className={`grid size-[30px] shrink-0 place-items-center rounded-radius-full border-2 text-caption-md font-bold tabular-nums transition-all focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring-brand ${
+                cumprida
+                  ? "border-transparent bg-bg-success text-fg-on-brand"
+                  : ehAtual
+                    ? "border-border-brand bg-bg-brand text-fg-on-brand"
+                    : "border-border-default bg-bg-canvas text-fg-subtle"
+              } ${
+                selecionada
+                  ? "scale-110 ring-4 ring-ring-brand"
+                  : alcancavel
+                    ? "hover:scale-105"
+                    : "cursor-not-allowed"
               }`}
             >
-              <span
-                className={`grid size-[34px] shrink-0 place-items-center rounded-radius-full border-2 text-body-sm font-bold tabular-nums transition-colors ${
-                  cumprida
-                    ? "border-transparent bg-bg-success text-fg-on-brand"
-                    : ehAtual
-                      ? "border-border-brand bg-bg-brand text-fg-on-brand"
-                      : "border-border-default bg-bg-canvas text-fg-subtle"
-                } ${selecionada && !ehAtual ? "ring-4 ring-ring-brand" : ""}`}
-              >
-                {cumprida ? <Check className="size-[16px]" strokeWidth={3} aria-hidden /> : i + 1}
-              </span>
-              <span className="flex flex-col items-center gap-[1px]">
-                <span className="text-caption-sm uppercase tracking-wide text-fg-subtle">
-                  Passo {i + 1}
-                </span>
-                <span
-                  className={`break-words text-center text-caption-md leading-tight ${
-                    selecionada ? "font-semibold text-fg-default" : "text-fg-muted"
-                  }`}
-                >
-                  {CURTO[etapa.id]}
-                </span>
-                <span
-                  className={`text-caption-sm tabular-nums ${
-                    feitos === total ? "text-fg-success" : "text-fg-subtle"
-                  }`}
-                >
-                  {feitos}/{total}
-                </span>
-              </span>
+              {cumprida ? <Check className="size-[14px]" strokeWidth={3} aria-hidden /> : i + 1}
             </button>
             {i < ETAPAS.length - 1 && (
-              /* O fio vive entre os passos e não dentro deles — é o que faz a faixa
-                 parecer uma esteira em vez de sete botões soltos. `mt` alinha o fio ao
-                 centro do círculo (34/2 + padding do botão). */
               <span
-                className={`mt-[28px] h-[2px] w-[14px] shrink-0 ${
+                className={`h-[2px] w-[18px] shrink-0 ${
                   i < atual ? "bg-bg-success" : "bg-border-default"
                 }`}
                 aria-hidden
@@ -153,8 +118,8 @@ export function PanelAssistente({
 }) {
   const imp = implantacao;
   const [vista, setVista] = useState<EtapaId>(imp.etapa);
-  /* Nota local por etapa — não vai para o mock de propósito: é campo de rascunho da
-     proposta, e persistir exigiria um formato de dado que ainda não foi decidido. */
+  /* Nota local: é rascunho da proposta e não vai para o mock — persistir exigiria um
+     formato de dado que ainda não foi decidido. */
   const [nota, setNota] = useState("");
 
   useEffect(() => {
@@ -187,9 +152,6 @@ export function PanelAssistente({
           <Button variant="outline" color="secondary" size="sm" onClick={onClose}>
             Cancelar
           </Button>
-          {/* Anterior/Próximo navegam a VISTA quando se está olhando o passado, e movem
-              a implantação quando se está na etapa corrente. Dois verbos no mesmo par de
-              botões seria confuso, então o rótulo muda junto. */}
           <Button
             variant="outline"
             color="secondary"
@@ -228,28 +190,11 @@ export function PanelAssistente({
       <div className="flex flex-col">
         {/* ══ Zona de PASSO — a única que fala de etapa ══════════════════════ */}
         <div className="border-b border-border-default bg-bg-subtle px-pad-4xl py-pad-2xl">
-          <FaixaDePassos implantacao={imp} vista={vista} onIr={setVista} />
-        </div>
-
-        {/* ══ Zona INFORMATIVA — uma tira, não uma seção ════════════════════ */}
-        <div className="grid grid-cols-2 gap-gp-lg border-b border-border-subtle px-pad-4xl py-pad-xl sm:grid-cols-4">
-          {[
-            { r: "Pontos", v: `${imp.pontos} × ${potencia(imp.potenciaKw)}` },
-            { r: "Investimento", v: moeda(imp.investimento) },
-            { r: "Responsável", v: imp.responsavel },
-            { r: "Previsão", v: dataCurta(imp.previsaoDeInstalacao) },
-          ].map((d) => (
-            <div key={d.r} className="flex min-w-0 flex-col gap-[1px]">
-              <span className="text-caption-sm text-fg-subtle">{d.r}</span>
-              <span className="truncate text-body-sm tabular-nums text-fg-default">
-                {d.v}
-              </span>
-            </div>
-          ))}
+          <FitaDePassos implantacao={imp} vista={vista} onIr={setVista} />
         </div>
 
         {/* ══ Zona de TRABALHO — só o passo aberto ══════════════════════════ */}
-        <div className="flex flex-col gap-gp-2xl px-pad-4xl py-pad-4xl">
+        <div className="flex flex-col gap-gp-2xl px-pad-4xl py-pad-3xl">
           <div className="flex flex-col items-center gap-gp-sm text-center">
             <span className="text-caption-sm uppercase tracking-wide text-fg-subtle">
               Passo {iVista + 1} de {ETAPAS.length}
@@ -260,7 +205,7 @@ export function PanelAssistente({
             <span className="max-w-[46ch] text-body-sm leading-snug text-fg-muted">
               {ETAPA_POR_ID[vista].resumo}
             </span>
-            <span className="mt-gp-sm flex items-center gap-gp-md">
+            <span className="mt-gp-sm flex flex-wrap items-center justify-center gap-gp-md">
               <Chip
                 color={feitos === total ? "success" : "neutral"}
                 variant="soft"
@@ -277,43 +222,12 @@ export function PanelAssistente({
             </span>
           </div>
 
-          <ul className="flex flex-col gap-gp-md">
-            {CHECKLIST_POR_ETAPA[vista].map((item) => {
-              const feito = imp.feitos.includes(item.id);
-              return (
-                <li key={item.id}>
-                  <div
-                    onClick={() => onAlternarItem(item.id)}
-                    className={`flex cursor-pointer items-center gap-gp-lg rounded-radius-lg border-2 px-pad-2xl py-pad-xl transition-colors ${
-                      feito
-                        ? "border-border-brand bg-bg-brand-subtle"
-                        : "border-border-default bg-bg-surface hover:border-border-brand hover:bg-bg-muted"
-                    }`}
-                  >
-                    <Checkbox
-                      checked={feito}
-                      onCheckedChange={() => onAlternarItem(item.id)}
-                      aria-label={item.texto}
-                      className="pointer-events-none"
-                    />
-                    <span className="min-w-0 flex-1 break-words text-body-sm leading-snug text-fg-default">
-                      {item.texto}
-                    </span>
-                    {item.obrigatorio && (
-                      <Chip
-                        color={feito ? "success" : "warning"}
-                        variant="soft"
-                        size="sm"
-                        shape="pill"
-                      >
-                        {feito ? "OK" : "Obrigatório"}
-                      </Chip>
-                    )}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+          <ChecklistDaEtapa
+            implantacao={imp}
+            etapa={vista}
+            onAlternar={onAlternarItem}
+            variante="cartao"
+          />
 
           <FormFieldTextarea
             label="Nota deste passo"
@@ -330,6 +244,32 @@ export function PanelAssistente({
                 : `Faltam ${pendentes.length} itens obrigatórios para concluir este passo.`}
             </p>
           )}
+        </div>
+
+        {/* ══ Zona INFORMATIVA — no fim, porque não é o que se faz aqui ═════ */}
+        <div className="flex flex-col gap-gp-3xl border-t border-border-default bg-bg-subtle px-pad-4xl py-pad-3xl">
+          <div className="flex flex-col gap-gp-lg">
+            <TituloDeSecao>O ponto</TituloDeSecao>
+            <div className="rounded-radius-lg bg-bg-surface px-pad-2xl">
+              <BlocoDoPonto implantacao={imp} />
+            </div>
+          </div>
+          <div className="flex flex-col gap-gp-lg">
+            <TituloDeSecao>Prazos e responsável</TituloDeSecao>
+            <div className="rounded-radius-lg bg-bg-surface px-pad-2xl">
+              <BlocoDePrazos implantacao={imp} />
+            </div>
+          </div>
+          {imp.observacao && (
+            <div className="flex flex-col gap-gp-lg">
+              <TituloDeSecao>Observação</TituloDeSecao>
+              <p className="text-body-sm leading-relaxed text-fg-muted">{imp.observacao}</p>
+            </div>
+          )}
+          <span className="text-caption-sm text-fg-subtle">
+            {imp.pontos} × {potencia(imp.potenciaKw)} · {moeda(imp.investimento)} · previsão{" "}
+            {dataCurta(imp.previsaoDeInstalacao)}
+          </span>
         </div>
       </div>
     </FloatingPanel>

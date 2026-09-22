@@ -39,6 +39,7 @@ import { ImplantacaoFormPanel } from "./ImplantacaoFormPanel";
 import { PanelAssistente } from "./PanelAssistente";
 import { PanelCompacto } from "./PanelCompacto";
 import { PanelDuasColunas } from "./PanelDuasColunas";
+import { PanelFichaComAbas } from "./PanelFichaComAbas";
 
 /**
  * Funil de implantação — Kanban e tabela sobre os mesmos dados.
@@ -220,13 +221,15 @@ function construirColunas(handlers: {
  * | Rede Boa Praça (`IMP-2026-001`) | **A** | cartão de status, uma coluna estreita |
  * | Pousada Serra Azul (`IMP-2026-002`) | **B** | workspace em duas colunas, com abas |
  * | Grupo Via Norte (`IMP-2026-003`) | **C** | assistente, uma etapa por vez |
+ * | Condomínio Parque das Águas (`IMP-2026-004`) | **D** | ficha em três abas |
  *
- * As outras onze continuam no painel atual — é o controle da comparação.
+ * As outras dez continuam no painel original — é o controle da comparação.
  */
-const PROPOSTA_POR_IMPLANTACAO: Record<string, "a" | "b" | "c"> = {
+const PROPOSTA_POR_IMPLANTACAO: Record<string, "a" | "b" | "c" | "d"> = {
   "IMP-2026-001": "a",
   "IMP-2026-002": "b",
   "IMP-2026-003": "c",
+  "IMP-2026-004": "d",
 };
 
 /** Colunas do board — derivadas de `ETAPAS`, na ordem do funil. */
@@ -362,7 +365,7 @@ export function ImplantacoesPage() {
     <div className="flex min-h-0 flex-1 flex-col gap-gp-2xl">
       <PageHeader
         title="Implantações"
-        description={`${IMPLANTACOES_TEXTOS.aviso} · Três propostas de painel em teste: abra Rede Boa Praça (A), Pousada Serra Azul (B) ou Grupo Via Norte (C).`}
+        description={`${IMPLANTACOES_TEXTOS.aviso} · Quatro propostas de painel em teste: Rede Boa Praça (A), Pousada Serra Azul (B), Grupo Via Norte (C) e Condomínio Parque das Águas (D).`}
         badge={
           <Chip color="neutral" variant="soft" size="sm" shape="rounded">
             {total} no funil · {emAtraso} {emAtraso === 1 ? "atrasada" : "atrasadas"}
@@ -519,6 +522,7 @@ export function ImplantacoesPage() {
         <PanelCompacto
           implantacao={detalhe}
           onClose={() => setDetalheId(null)}
+          onAlternarItem={(itemId) => alternarItem(detalhe.id, itemId)}
           onMoverEtapa={(etapa) => moverEtapa(detalhe, etapa)}
           onEditar={abrirEdicao}
           onExcluir={(i) => {
@@ -546,6 +550,19 @@ export function ImplantacoesPage() {
           onClose={() => setDetalheId(null)}
           onAlternarItem={(itemId) => alternarItem(detalhe.id, itemId)}
           onMoverEtapa={(etapa) => moverEtapa(detalhe, etapa)}
+        />
+      )}
+      {detalhe && proposta === "d" && (
+        <PanelFichaComAbas
+          implantacao={detalhe}
+          onClose={() => setDetalheId(null)}
+          onAlternarItem={(itemId) => alternarItem(detalhe.id, itemId)}
+          onMoverEtapa={(etapa) => moverEtapa(detalhe, etapa)}
+          onEditar={abrirEdicao}
+          onExcluir={(i) => {
+            setDetalheId(null);
+            setAExcluir(i);
+          }}
         />
       )}
       {!proposta && (
