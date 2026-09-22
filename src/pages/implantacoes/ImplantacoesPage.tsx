@@ -37,7 +37,7 @@ import {
 import { ImplantacaoDetailPanel } from "./ImplantacaoDetailPanel";
 import { ImplantacaoFormPanel } from "./ImplantacaoFormPanel";
 import { PanelDuasColunas } from "./PanelDuasColunas";
-import { PanelResumoComAbas } from "./PanelResumoComAbas";
+import { PanelComAbas } from "./PanelComAbas";
 
 /**
  * Funil de implantação — Kanban e tabela sobre os mesmos dados.
@@ -216,7 +216,7 @@ function construirColunas(handlers: {
  * | implantação | proposta | forma |
  * |---|---|---|
  * | Pousada Serra Azul (`IMP-2026-002`) | **B** | duas colunas, coluna fixa + abas |
- * | Rede Boa Praça (`IMP-2026-001`) | **E** | resumo fixo + Checklist / Detalhamento |
+ * | Rede Boa Praça (`IMP-2026-001`) | **E** | andamento + Checklist / Detalhamento |
  *
  * As outras doze continuam no painel original — é o controle da comparação.
  *
@@ -530,7 +530,7 @@ export function ImplantacoesPage() {
         />
       )}
       {detalhe && proposta === "e" && (
-        <PanelResumoComAbas
+        <PanelComAbas
           implantacao={detalhe}
           onClose={() => setDetalheId(null)}
           onAlternarItem={(itemId) => alternarItem(detalhe.id, itemId)}

@@ -1,17 +1,5 @@
 import type { ReactNode } from "react";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Building2,
-  CalendarDays,
-  CircleDollarSign,
-  Lock,
-  MapPin,
-  Pencil,
-  Route,
-  Trash2,
-  UserRound,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Lock, Pencil, Trash2 } from "lucide-react";
 import { Avatar, Button, Chip } from "@snksergio/design-system";
 import { Checkbox } from "@snksergio/design-system/shadcn";
 import { corDoAvatar, iniciais } from "~/pages/motoristas/motoristas-ui";
@@ -462,91 +450,6 @@ export function BlocoDeCadastro({
         Excluir implantação
       </Button>
     </div>
-  );
-}
-
-/**
- * Resumo sempre visível, no formato do print: ícone + rótulo à esquerda, valor em
- * negrito à direita.
- *
- * ⚠️ São as MESMAS informações da tabela do funil, de propósito. Quem clicou numa linha
- * quer continuar vendo o que o fez clicar; obrigar a abrir uma aba para reconferir o
- * valor ou o responsável é fazer a pessoa guardar dado de cabeça entre duas telas.
- */
-export function ResumoRapido({ implantacao }: { implantacao: Implantacao }) {
-  const imp = implantacao;
-  const linhas: { icone: ReactNode; label: string; valor: ReactNode }[] = [
-    { icone: <Building2 className="size-icon-sm" />, label: "Cliente", valor: imp.cliente },
-    {
-      icone: <MapPin className="size-icon-sm" />,
-      label: "Local",
-      valor: (
-        <span className="block whitespace-normal break-words text-right leading-snug">
-          {imp.local}
-        </span>
-      ),
-    },
-    {
-      icone: <Route className="size-icon-sm" />,
-      label: "Etapa",
-      valor: (
-        <span className="flex justify-end">
-          <Chip color="primary" variant="soft" size="sm" shape="pill">
-            {indiceDaEtapa(imp.etapa) + 1} de {ETAPAS.length} ·{" "}
-            {ETAPA_POR_ID[imp.etapa].label}
-          </Chip>
-        </span>
-      ),
-    },
-    {
-      icone: <CircleDollarSign className="size-icon-sm" />,
-      label: "Investimento",
-      valor: <span className="tabular-nums">{moeda(imp.investimento)}</span>,
-    },
-    {
-      icone: <UserRound className="size-icon-sm" />,
-      label: "Responsável",
-      valor: (
-        <span className="flex items-center justify-end gap-gp-sm">
-          <Avatar size="xs" colorHex={corDoAvatar(imp.responsavel)} aria-hidden>
-            {iniciais(imp.responsavel)}
-          </Avatar>
-          {imp.responsavel}
-        </span>
-      ),
-    },
-    {
-      icone: <CalendarDays className="size-icon-sm" />,
-      label: "Previsão",
-      valor: (
-        <span
-          className={`tabular-nums ${atrasada(imp) ? "text-fg-danger" : ""}`}
-        >
-          {dataCurta(imp.previsaoDeInstalacao)}
-        </span>
-      ),
-    },
-  ];
-
-  return (
-    <dl className="flex flex-col gap-gp-xl">
-      {linhas.map((l) => (
-        <div
-          key={l.label}
-          className="grid grid-cols-1 gap-x-gp-md gap-y-gp-2xs sm:grid-cols-[176px_1fr] sm:items-center"
-        >
-          <dt className="flex items-center gap-gp-md text-body-sm text-fg-muted">
-            <span className="grid shrink-0 place-items-center text-fg-subtle">
-              {l.icone}
-            </span>
-            {l.label}
-          </dt>
-          <dd className="min-w-0 text-body-sm font-semibold text-fg-default sm:text-right">
-            {l.valor}
-          </dd>
-        </div>
-      ))}
-    </dl>
   );
 }
 

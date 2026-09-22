@@ -18,34 +18,35 @@ import {
   BlocoDoPonto,
   BotoesDeEtapa,
   ChecklistDaEtapa,
-  ResumoRapido,
   contadorDaEtapa,
 } from "./implantacoes-blocos";
 
 /**
- * **Proposta E — resumo fixo + duas abas.** Uma coluna, para o painel padrão do produto.
+ * **Proposta E — andamento + duas abas.** Uma coluna, no painel padrão do produto.
  *
  * ## A ordem de leitura
  *
- * 1. **Resumo** — cliente, local, etapa, investimento, responsável e previsão, no
- *    formato ícone/rótulo/valor. São as mesmas colunas da tabela do funil: quem clicou
- *    numa linha quer continuar vendo o que o fez clicar.
- * 2. **Andamento** — a trilha das sete etapas, clicável.
- * 3. **Abas** — `Checklist` é o trabalho; `Detalhamento` é a ficha completa e o cadastro.
+ * 1. **Andamento** — percentual do funil e a trilha das sete etapas, clicável.
+ * 2. **Abas** — `Checklist` é o trabalho; `Detalhamento` é a ficha completa mais o
+ *    cadastro.
  *
  * ## O que ficou diferente do painel original
  *
- * O original empilhava checklist e cinco seções de leitura numa coluna só, e chegar ao
- * cadastro exigia rolar o painel inteiro. Aqui a leitura mora atrás de uma aba e o
- * checklist abre direto — invertendo o peso, como o operador pediu.
+ * O original empilhava checklist e cinco seções de leitura numa coluna só, e chegar
+ * ao cadastro exigia rolar o painel inteiro. Aqui a leitura mora atrás de uma aba e o
+ * checklist abre direto — invertendo o peso.
  *
- * ⚠️ O resumo NÃO é colapsável. Ele existe justamente para estar sempre à vista; um
- * chevron ali convidaria a fechá-lo e o painel voltaria a esconder o que importa.
+ * ⚠️ **Houve um resumo fixo no topo e ele foi removido.** A ideia era repetir as
+ * colunas da tabela (cliente, local, etapa, investimento, responsável, previsão) para
+ * ficarem sempre à vista; na prática eram seis linhas empurrando o checklist para
+ * baixo, e o operador pediu para tirar. O cabeçalho já carrega cliente, id, local e
+ * situação, e a aba `Detalhamento` tem o resto — a informação não se perdeu, só
+ * deixou de custar meia tela.
  */
 
 type AbaId = "checklist" | "detalhamento";
 
-export function PanelResumoComAbas({
+export function PanelComAbas({
   implantacao,
   onClose,
   onAlternarItem,
@@ -114,10 +115,6 @@ export function PanelResumoComAbas({
         </>
       }
     >
-      <FloatingPanelSection title="Resumo" collapsible={false}>
-        <ResumoRapido implantacao={imp} />
-      </FloatingPanelSection>
-
       <FloatingPanelSection title="Andamento">
         <div className="flex flex-col gap-gp-2xl">
           <div className="flex flex-col gap-gp-md">
