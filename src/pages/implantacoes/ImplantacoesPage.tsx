@@ -20,6 +20,7 @@ import {
   Kpi,
   KpiGroup,
   PageHeader,
+  presetView,
   type DataTableColumnDef,
   type KanbanColumn,
 } from "@snksergio/design-system";
@@ -37,6 +38,7 @@ import {
   moeda,
   pendenciasObrigatorias,
   progressoDaEtapa,
+  situacaoDoPrazo,
   type EtapaId,
   type Implantacao,
 } from "./implantacoes-mock";
@@ -103,7 +105,7 @@ function construirColunas(handlers: {
     {
       field: "local",
       headerName: "Local",
-      width: 148,
+      width: 140,
       valueGetter: (row) => `${row.local} ${row.cidade}`,
       render: ({ row }) => (
         <span className="flex min-w-0 flex-col gap-[2px]">
@@ -152,14 +154,35 @@ function construirColunas(handlers: {
       render: ({ row }) => <ProgressoDaEtapa implantacao={row} />,
     },
     {
-      field: "investimento",
-      headerName: "Investimento",
-      width: 124,
-      align: "right",
-      valueGetter: (row) => row.investimento,
-      render: ({ row }) => (
-        <span className="tabular-nums text-fg-default">{moeda(row.investimento)}</span>
-      ),
+      /* ⚠️ Esta coluna existe para as VISÕES SALVAS terem em que filtrar — sem uma
+         coluna filtrável, `presetView` não tem field. E ela substituiu a de
+         Investimento, que saiu por largura: as oito somavam mais que os 1100px úteis
+         a 1440 com o rail aberto. Numa lista de funil, "está atrasada?" é conferido
+         muito mais vezes que o valor exato — que segue no KPI do topo, no cartão do
+         board e no painel. */
+      field: "situacaoDoPrazo",
+      headerName: "Situação",
+      width: 128,
+      enableColumnFilter: true,
+      filterType: "multiSelect",
+      valueGetter: (row) => situacaoDoPrazo(row),
+      render: ({ row }) => {
+        const s = situacaoDoPrazo(row);
+        return (
+          <span className="flex">
+            <Chip
+              color={
+                s === "Atrasada" ? "danger" : s === "Concluída" ? "success" : "neutral"
+              }
+              variant="soft"
+              size="sm"
+              shape="pill"
+            >
+              {s}
+            </Chip>
+          </span>
+        );
+      },
     },
     {
       field: "responsavel",
@@ -224,6 +247,35 @@ function construirColunas(handlers: {
  */
 const AJUSTES_DO_KPI =
   "[&>header>span]:rounded-radius-full [&>div:first-of-type]:-mt-gp-xs";
+
+/**
+ * As visões salvas da tabela.
+ *
+ * Três abas contando a Default, que é o teto do `maxViewTabs` — por isso não há uma
+ * quarta para "Concluídas": elas já são o que sobra de tirar as duas, e uma aba para
+ * trabalho encerrado seria a menos visitada ocupando o mesmo espaço.
+ *
+ * ⚠️ `defaultViews` exige `persistId`; sem ele as visões compilam e não aparecem.
+ *
+ * ⚠️ **A primeira aba volta a se chamar "Default".** O `toolbar.title` vira `soloLabel`,
+ * que só vale quando a Default é a ÚNICA aba — com preset ela perde o nome próprio.
+ * Mantivemos `title: "Todas"` porque ele volta a valer se as visões saírem.
+ * 📋 Lacuna do DS, terceira tela em que aparece (antes: Cupons e Locais).
+ */
+const VISOES = [
+  presetView({
+    id: "preset:atrasadas",
+    name: "Atrasadas",
+    filters: [{ field: "situacaoDoPrazo", value: "Atrasada" }],
+    sort: [{ field: "previsaoDeInstalacao", direction: "asc" }],
+  }),
+  presetView({
+    id: "preset:em-dia",
+    name: "Em dia",
+    filters: [{ field: "situacaoDoPrazo", value: "Em dia" }],
+    sort: [{ field: "previsaoDeInstalacao", direction: "asc" }],
+  }),
+];
 
 /** Colunas do board — derivadas de `ETAPAS`, na ordem do funil. */
 const COLUNAS_DO_BOARD: KanbanColumn[] = ETAPAS.map((e) => ({
@@ -543,6 +595,7 @@ export function ImplantacoesPage() {
           enableDensity: true,
           enableExport: true,
         }}
+        defaultViews={VISOES}
         allowCreateView={false}
         paginationConfig={{
           enabled: true,

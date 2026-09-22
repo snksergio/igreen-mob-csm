@@ -550,6 +550,24 @@ export function diasParaPrevisao(imp: Implantacao, agora: Date = HOJE): number {
   return -diasEntre(imp.previsaoDeInstalacao, agora);
 }
 
+/**
+ * O prazo em uma palavra — é o que a coluna e as visões salvas filtram.
+ *
+ * Três estados e não dois: **Concluída** não é nem atrasada nem em dia. Uma
+ * implantação entregue depois da previsão continua entregue, e deixá-la em
+ * "Atrasada" faria a visão de atrasos inflar com trabalho que já acabou — que é o
+ * caminho mais curto para o operador parar de olhar a visão.
+ */
+export type SituacaoDoPrazo = "Atrasada" | "Em dia" | "Concluída";
+
+export function situacaoDoPrazo(
+  imp: Implantacao,
+  agora: Date = HOJE,
+): SituacaoDoPrazo {
+  if (concluida(imp)) return "Concluída";
+  return atrasada(imp, agora) ? "Atrasada" : "Em dia";
+}
+
 /* ══ Formatação ══════════════════════════════════════════════════════════════ */
 
 export const moeda = (v: number): string =>

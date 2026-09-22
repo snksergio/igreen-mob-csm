@@ -21,6 +21,7 @@ import {
   progressoDaEtapa,
   progressoGeral,
   proximaEtapa,
+  situacaoDoPrazo,
   type Implantacao,
 } from "./implantacoes-mock";
 
@@ -232,6 +233,28 @@ describe("o elenco do mock", () => {
         HOJE.getTime(),
       );
     });
+  });
+});
+
+describe("situação de prazo", () => {
+  /* Três estados, não dois — ver o JSDoc de . */
+  it("concluída não é atrasada nem em dia, mesmo com previsão vencida", () => {
+    const fim = IMPLANTACOES.find((i) => concluida(i));
+    expect(fim).toBeDefined();
+    expect(situacaoDoPrazo(fim!)).toBe("Concluída");
+  });
+
+  it("previsão vencida e em andamento é Atrasada", () => {
+    const atrasadas = IMPLANTACOES.filter((i) => atrasada(i));
+    expect(atrasadas.length).toBeGreaterThan(0);
+    atrasadas.forEach((i) => expect(situacaoDoPrazo(i)).toBe("Atrasada"));
+  });
+
+  it("o elenco cobre os três estados — senão as visões salvas abririam vazias", () => {
+    const vistos = new Set(IMPLANTACOES.map((i) => situacaoDoPrazo(i)));
+    expect(vistos.has("Atrasada")).toBe(true);
+    expect(vistos.has("Em dia")).toBe(true);
+    expect(vistos.has("Concluída")).toBe(true);
   });
 });
 
