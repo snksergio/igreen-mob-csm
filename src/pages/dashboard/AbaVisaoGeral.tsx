@@ -216,7 +216,11 @@ export function AbaVisaoGeral({
       <section aria-label="Indicadores do período">
         {/* 4 colunas e não 6: são OITO KPIs, e com 6 a segunda fila fica com duas
             células esticadas ocupando a largura de seis. 4×2 fecha sem sobra. */}
-        <KpiGroup columns={4} divided>
+        {/* ⚠️ `columns={4}` no DS emite `lg:grid-cols-4`, e `lg` é 1024px — a coluna
+            nasce com 171px enquanto "10.734,73 kWh" precisa de 168px MAIS o padding da
+            célula, então o número quebrava no meio. Seguramos a densidade máxima até
+            `xl` (1280px), onde a coluna mede 255px. Medido, não estimado. */}
+        <KpiGroup columns={4} divided className="lg:grid-cols-2 xl:grid-cols-4">
           {KPIS.map((k, indice) => {
             const v =
               k.temDelta === false

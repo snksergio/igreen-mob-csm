@@ -326,14 +326,30 @@ export function SeletorDeLocais({
         align="start"
         sideOffset={6}
         /* `w-dropdown-lg` = 320px do token de container do DS (`--container-dropdown-lg`),
-           no lugar do `w-[288px]` que estava na unha. */
-        className="w-dropdown-lg overflow-hidden p-0"
+           no lugar do `w-[288px]` que estava na unha.
+
+           ⚠️ `max-md:bg-bg-surface` conserta o defeito de mobile. Abaixo de `md` o
+           `PopoverContent` do DS vira bottom sheet, e a superfície dele
+           (`bg-bg-dropdown`) é translúcida de propósito — conta com o
+           `before:backdrop-blur-2xl` para o fundo virar vidro. Só que o gatilho aqui
+           mora DENTRO do drawer do menu mobile, que é outro contexto de empilhamento: o
+           `backdrop-filter` não alcança o que está pintado lá, o blur não acontece, e a
+           lista de locais aparecia por cima do menu inteiro, os dois legíveis ao mesmo
+           tempo. Superfície opaca resolve sem tocar no DS. `max-md:` e `bg-*` nativo,
+           então o `tailwind-merge` respeita a variante em vez de descartar (L-072 vale
+           para as classes com prefixo DS, não para estas). */
+        className="w-dropdown-lg overflow-hidden p-0 max-md:bg-bg-surface"
       >
-        {/* Altura máxima no CONTAINER, não na lista: é o que permite o rodapé ficar
-            fixo. `flex-col` + a lista com `min-h-0 flex-1` = só ela rola.
+        {/* Altura máxima no CONTAINER, não na lista — é o que permite o rodapé ficar
+            fixo (`flex-col` + lista com `min-h-0 flex-1`: só ela rola). Padding no
+            container faria o conteúdo rolar por baixo dele, por isso o `p-0` acima.
+
             ⚠️ Este `max-h` fica na unha porque o DS **não tem** escala de altura máxima
             pra área de scroll — os tokens de `container` são de largura. 22rem ≈ 6 linhas
-            e meia, que é o que faz o corte ficar visível (afordância de que rola). */}
+            e meia, que é o que faz o corte ficar visível (afordância de que rola).
+
+            No mobile o `PopoverContent` do DS vira bottom sheet e o Radix dimensiona o
+            card pelo espaço disponível, então o teto não briga com ele. */}
         <div className="flex max-h-[min(22rem,60vh)] flex-col">
           <div className="flex shrink-0 flex-col gap-gp-md border-b border-border-subtle px-pad-xl py-pad-lg">
             <span className="text-caption-md font-semibold text-fg-subtle">
@@ -404,15 +420,21 @@ export function SeletorDeLocais({
 
           {/* Rodapé FIXO — `shrink-0` fora da área de scroll. As duas ações valem pra
               lista toda, então sumir de vista ao rolar era o defeito, não detalhe. */}
-          <div className="flex shrink-0 items-center justify-between gap-gp-md border-t border-border-subtle px-pad-lg py-pad-md">
+          {/* No mobile as duas ações viram UMA POR LINHA, com altura de alvo de toque.
+              Lado a lado num sheet de 375px elas ficavam com ~110px cada, encostadas uma
+              na outra e nas bordas — e "Selecionar todas" ao lado de "Limpar" a essa
+              distância é convite a errar o dedo justamente entre marcar tudo e desmarcar
+              tudo. No desktop nada muda: contagem à esquerda, ações à direita. */}
+          <div className="flex shrink-0 flex-col gap-gp-md border-t border-border-subtle px-pad-lg py-pad-md md:flex-row md:items-center md:justify-between">
             <span className="text-caption-md tabular-nums text-fg-muted">
               {escopo.locais.length} de {locais.length}
             </span>
-            <span className="flex items-center gap-gp-xs">
+            <span className="flex flex-col gap-gp-xs md:flex-row md:items-center">
               <Button
                 variant="ghost"
                 color="primary"
                 size="2xs"
+                className="max-md:min-h-form-xl max-md:w-full max-md:justify-start"
                 disabled={escopo.locais.length === locais.length}
                 onClick={() => onChange({ ...escopo, locais: [...locais] })}
               >
@@ -422,6 +444,7 @@ export function SeletorDeLocais({
                 variant="ghost"
                 color="secondary"
                 size="2xs"
+                className="max-md:min-h-form-xl max-md:w-full max-md:justify-start"
                 disabled={escopo.locais.length === 0}
                 onClick={() => onChange({ ...escopo, locais: [] })}
               >

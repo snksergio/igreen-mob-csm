@@ -1,7 +1,15 @@
-import type { ReactNode } from "react";
-import { AlertTriangle, BellRing, Moon, PlugZap, Sun } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import {
+  AlertTriangle,
+  BellRing,
+  Moon,
+  PanelLeftOpen,
+  PlugZap,
+  Sun,
+} from "lucide-react";
 import {
   AppShell as DsAppShell,
+  Button,
   type HeaderNotificationsConfig,
   type HeaderThemeOption,
   type Theme,
@@ -9,6 +17,52 @@ import {
 import { NAV_CATEGORIES, PAGE_LABELS, type PageId } from "~/nav/nav-data";
 import { moduloDaEmpresa, SeletorDeLocais, type Escopo } from "./EscopoGlobal";
 import { EMPRESAS, LOCAIS } from "~/pages/transacoes/transacoes-mock";
+
+/**
+ * Largura a partir da qual o rail abre com os rótulos.
+ *
+ * O DS usa 1536px (a mesma fronteira do padding do body). Medimos e a fronteira real
+ * deste produto é mais baixa: o rail expandido custa 220px, e a 1360 as oito colunas de
+ * KPI do Dashboard ainda cabem com folga. Abaixo disso o conteúdo começa a espremer —
+ * a 1024 o valor "10.734,73 kWh" precisava de 168px e recebia 130px, quebrando no meio
+ * do número.
+ *
+ * ⚠️ Vale só no mount, igual ao DS: quem abriu o menu na mão não o vê fechar sozinho ao
+ * redimensionar a janela.
+ */
+const LARGURA_DE_RAIL_ABERTO = 1360;
+
+function railComecaRetraido() {
+  if (typeof window === "undefined") return false;
+  return window.innerWidth < LARGURA_DE_RAIL_ABERTO;
+}
+
+/**
+ * Botão de expandir o rail, no canto direito do header.
+ *
+ * 📋 **Lacuna do DS, e é o que obriga este componente a existir.** Com o rail retraído o
+ * `AppShell` esconde o `sidebarModule` e o `sidebarTopSlot` — que aqui são a EMPRESA e os
+ * LOCAIS, o recorte global de que toda tela depende — e **não desenha nenhum gatilho de
+ * expandir**: o cabeçalho da sidebar fica só com a logo (medido no DOM, 2026-09-22). Sem
+ * isto, retrair abaixo de 1360 tornaria o escopo inalcançável, sem caminho de volta.
+ *
+ * Aparece só quando retraído: com o rail aberto o próprio DS já oferece o botão de fechar.
+ */
+function BotaoDeExpandirRail({ onExpandir }: { onExpandir: () => void }) {
+  return (
+    <Button
+      variant="ghost"
+      color="secondary"
+      size="sm"
+      /* Sem filho: o `Button` do DS não tem prop `iconOnly`, e um botão só com
+         `iconLeft` já renderiza quadrado. O nome acessível vem do `aria-label`. */
+      iconLeft={<PanelLeftOpen />}
+      onClick={onExpandir}
+      aria-label="Expandir o menu e o seletor de locais"
+      title="Expandir o menu e o seletor de locais"
+    />
+  );
+}
 
 interface Props {
   activePage: PageId;
@@ -98,17 +152,26 @@ export function AppShell({
   onTemaChange,
   children,
 }: Props) {
+  /**
+   * Retração do rail **controlada por nós**, e não pelo estado interno do DS.
+   *
+   * O DS aceita `defaultMenuCollapsed` (uncontrolled) — bastaria para abrir retraído. Mas
+   * aí não dá pra SABER se está retraído, e é essa informação que decide se o header
+   * precisa mostrar o botão de expandir. Ver o JSDoc de `BotaoDeExpandirRail`.
+   */
+  const [railRetraido, setRailRetraido] = useState(railComecaRetraido);
 
   return (
     <DsAppShell
       sidebar="single"
       categories={NAV_CATEGORIES}
       sidebarTitle="iGreen MOB"
-      /* O default do AppShell e RESPONSIVO: colapsado abaixo de 1536px, expandido acima
-         (app-shell.tsx:22). A referencia mostra o rail expandido com labels a 1292px de
-         viewport, entao fidelidade pede o explicito. Sem isto, a tela abre so com o rail
-         de icones em qualquer monitor abaixo de 1536px — que e a maioria. */
-      defaultMenuCollapsed={false}
+      /* O default do DS é responsivo, mas na fronteira dele: colapsado abaixo de 1536px.
+         Passávamos `false` cru, o que **vence a regra responsiva inclusive em telas
+         pequenas** — e era por isso que a 1024 o rail continuava aberto comendo 220px do
+         conteúdo. Agora a regra é nossa, com a fronteira medida. */
+      menuCollapsed={railRetraido}
+      onMenuCollapseChange={setRailRetraido}
       /* ESCOPO GLOBAL no topo da sidebar, em dois campos empilhados:
            · `sidebarModule`  → a EMPRESA (seletor do DS, não troca o menu)
            · `sidebarTopSlot` → os LOCAIS (multi-select nosso, ver `EscopoGlobal.tsx`)
@@ -143,6 +206,11 @@ export function AppShell({
       onThemeChange={(id) => onTemaChange(id as Theme)}
       themeOptions={OPCOES_TEMA}
       notifications={notificacoesDoHeader(() => onNavigate("alertas"))}
+      headerRightSlot={
+        railRetraido ? (
+          <BotaoDeExpandirRail onExpandir={() => setRailRetraido(false)} />
+        ) : undefined
+      }
       user={{ name: "Matheus Pego", email: "matheus.pego@exemplo.com.br" }}
       /**
        * `onSettings` leva à tela "Minha conta". A referência não tem esse item no menu

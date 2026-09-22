@@ -128,7 +128,10 @@ export function ResumoPage() {
           ⚠️ `divided` já transforma os filhos em `plain` — empilhar `Kpi` dentro de outro
           card pra conseguir o mesmo efeito é o anti-pattern que o `USAGE.md` do componente
           nomeia. */}
-      <KpiGroup columns={5} divided>
+      {/* Mesma correção do Dashboard, e aqui era pior: cinco colunas a 1024px dão
+          138px cada, e "686,28 kWh" precisa de 143px — quebrava sempre. Três colunas
+          entre 1024 e 1280, cinco a partir daí. */}
+      <KpiGroup columns={5} divided className="lg:grid-cols-3 xl:grid-cols-5">
         {indicadores.map((i) => {
           /* ⚠️ "Ruim" é a variação contra o `subirEhBom`, NÃO o sinal do percentual.
              Derivar da seta quebraria no primeiro indicador em que subir é ruim — um
