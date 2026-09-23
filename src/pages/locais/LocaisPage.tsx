@@ -14,6 +14,7 @@ import {
   ESTRUTURA_TEXTOS,
   type NoDaRede,
 } from "~/pages/estrutura-rede/estrutura-mock";
+import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
 import { LocalFormPanel } from "~/pages/estrutura-rede/LocalFormPanel";
 import { CelulaDeMotorista } from "~/pages/motoristas/motoristas-ui";
 import { Etiqueta } from "~/pages/transacoes/transacoes-ui";
@@ -275,7 +276,7 @@ export function LocaisPage() {
            por um motivo que não vale aqui: aquela tela tem mapa e barra ACIMA da tabela,
            então a página inteira rola e a tabela precisa de um teto próprio. Esta tem só
            cabeçalho e grade — é o caso normal. */
-        className="flex-1 min-h-0 [&_.scrollbar-thin]:[scrollbar-gutter:stable]"
+        className={`${ALTURA_DE_TABELA} [&_.scrollbar-thin]:[scrollbar-gutter:stable]`}
         /* `persistId` NÃO é opcional com visões: a barra de abas só renderiza quando
            `persistId && defaultViews.length > 0`. Sem ele o `defaultViews` compila e as
            abas simplesmente não aparecem. */

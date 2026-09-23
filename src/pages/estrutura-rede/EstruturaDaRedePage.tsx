@@ -21,6 +21,7 @@ import { EmpresaFormPanel } from "./EmpresaFormPanel";
 import { LocalFormPanel } from "./LocalFormPanel";
 import { CartaoDaEstrutura } from "./estrutura-cartao";
 import { avisoDeExcluido } from "~/components/feedback";
+import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
 
 /**
  * Tela de Estrutura da rede — medida em `/pt/settings/companies-net?page=1` (2026-09-16).
@@ -173,7 +174,7 @@ export function EstruturaDaRedePage() {
            `max-h-[72vh]` que estava aqui veio do Monitoramento, onde existe porque a
            página inteira rola (mapa e barra acima da tabela). Aqui não há nada acima além
            do cabeçalho — é o caso normal. */
-        "flex-1 min-h-0",
+        ALTURA_DE_TABELA,
         /* `scrollbar-gutter: stable` — a calha da barra vertical fica reservada desde o
            início, então expandir a árvore não empurra as colunas.
 
