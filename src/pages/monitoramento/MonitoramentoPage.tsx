@@ -5,10 +5,14 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
+  Sheet,
+  SheetContent,
+  SheetTitle,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@snksergio/design-system/shadcn";
+import { useEhCelular } from "~/components/celular";
 import {
   FAIXAS_DE_POTENCIA,
   MONITORAMENTO_TEXTOS,
@@ -155,8 +159,40 @@ export function MonitoramentoPage() {
     filtros.status.length +
     (TUDO_MARCADO.potencia.length - filtros.potencia.length);
 
+  /**
+   * ⚠️ Decisão de ÁRVORE, não de estilo — por isso `matchMedia` e não `max-md:`.
+   *
+   * No desktop o painel é uma coluna que EMPURRA o mapa (o argumento do `Scheduler`:
+   * marcar e conferir num gesto só). Num celular de 375px não há o que empurrar — a
+   * coluna de 280px deixaria 59px para o mapa, e as duas metades ficariam inúteis ao
+   * mesmo tempo. Aí o MESMO painel vai para uma folha de baixo, que é o que o operador
+   * pediu, e o mapa fica inteiro.
+   */
+  const ehCelular = useEhCelular();
+
   /** "A ferramenta de filtro está engajada" — painel aberto OU recorte aplicado. */
   const engajado = filtrosAbertos || desmarcados > 0;
+
+  /**
+   * As props do painel, num objeto só.
+   *
+   * Coluna e folha renderizam o MESMO `PainelDeFiltros` com o MESMO estado — a única
+   * diferença é a moldura. Duplicar a lista de props abriria a porta para as duas
+   * divergirem, e a que quebraria primeiro é a do celular, que é justamente a que
+   * ninguém olha ao mexer no desktop.
+   */
+  const propsDoPainel = {
+    filtros,
+    tudoMarcado: TUDO_MARCADO,
+    contagemDeStatus,
+    contagemDePotencia,
+    onAlternarStatus: (s: StatusPlugue) =>
+      setFiltros((f) => ({ ...f, status: alternar(f.status, s) })),
+    onAlternarPotencia: (x: FaixaDePotencia) =>
+      setFiltros((f) => ({ ...f, potencia: alternar(f.potencia, x) })),
+    onLimpar: () => setFiltros(TUDO_MARCADO),
+    onFechar: () => setFiltrosAbertos(false),
+  };
 
   return (
     /* ⚠️ **Sem `min-h-0 flex-1`, ao contrário das outras telas.** Aquele idioma serve a
@@ -190,7 +226,10 @@ export function MonitoramentoPage() {
         {/* Busca por LOCAL, separada da busca da tabela: esta move os pins do mapa, a da
             toolbar procura dentro das linhas. São escopos diferentes, e por isso têm
             placeholders diferentes. */}
-        <InputGroup className="w-[280px]">
+        {/* 280px travados numa fileira de 339 empurravam o botão Filtro para uma
+            segunda linha e deixavam a busca sozinha no alto. `flex-1` no celular: os
+            dois dividem a mesma linha e a busca fica com toda a sobra. */}
+        <InputGroup className="w-[280px] max-md:w-auto max-md:min-w-0 max-md:flex-1">
           <InputGroupAddon>
             <Search className="size-icon-sm text-fg-subtle" />
           </InputGroupAddon>
@@ -265,23 +304,29 @@ export function MonitoramentoPage() {
           onSelecionar={(l) => setLocal((atual) => (atual === l.local ? null : l.local))}
         />
 
-        {filtrosAbertos && (
-          <PainelDeFiltros
-            filtros={filtros}
-            tudoMarcado={TUDO_MARCADO}
-            contagemDeStatus={contagemDeStatus}
-            contagemDePotencia={contagemDePotencia}
-            onAlternarStatus={(s) =>
-              setFiltros((f) => ({ ...f, status: alternar(f.status, s) }))
-            }
-            onAlternarPotencia={(x) =>
-              setFiltros((f) => ({ ...f, potencia: alternar(f.potencia, x) }))
-            }
-            onLimpar={() => setFiltros(TUDO_MARCADO)}
-            onFechar={() => setFiltrosAbertos(false)}
-          />
-        )}
+        {!ehCelular && filtrosAbertos && <PainelDeFiltros {...propsDoPainel} />}
       </div>
+
+      {/* A MESMA composição, em folha, no celular.
+
+          `side="bottom"` e não `right`: a coluna nasceu vertical e continua vertical;
+          vinda da direita ela seria de novo uma coluna estreita num vão estreito, que é
+          o desenho que estamos desfazendo.
+
+          `hideClose` porque o painel já traz o X dele, ligado ao `onFechar` — dois X no
+          mesmo canto é a pergunta "qual deles fecha o quê".
+
+          `SheetTitle` em `sr-only`: o Radix exige título acessível no `Dialog` e avisa no
+          console quando falta. O título visível ("Filtros") é do painel. */}
+      <Sheet open={ehCelular && filtrosAbertos} onOpenChange={setFiltrosAbertos}>
+        <SheetContent side="bottom" hideClose className="max-h-[80dvh] p-0">
+          <SheetTitle className="sr-only">Filtros do monitoramento</SheetTitle>
+          <PainelDeFiltros
+            {...propsDoPainel}
+            className="flex w-full flex-col overflow-y-auto scrollbar-thin"
+          />
+        </SheetContent>
+      </Sheet>
 
       {/* ── Plugues por status ───────────────────────────────────────────
           Barra empilhada por PERCENTUAL, no desenho do cartão "Monthly Recurring Revenue"

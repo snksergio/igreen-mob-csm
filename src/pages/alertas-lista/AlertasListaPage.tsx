@@ -23,7 +23,7 @@ import {
 } from "./alertas-lista-mock";
 import { AlertaDetailPanel } from "./AlertaDetailPanel";
 import {
-  ALTURA_DE_TABELA,
+  TABELA_DE_PAGINA,
   RAIZ_DE_PAGINA,
 } from "~/components/altura-de-tabela";
 
@@ -373,7 +373,7 @@ export function AlertasListaPage() {
         columns={colunas}
         getRowId={(r) => r.id}
         autoFit
-        className={ALTURA_DE_TABELA}
+        className={TABELA_DE_PAGINA}
         persistId="igreen-mob-cms.alertas-lista"
         defaultViews={VISOES}
         allowCreateView={false}

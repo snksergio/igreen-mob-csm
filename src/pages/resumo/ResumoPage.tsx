@@ -25,8 +25,9 @@ import { TRANSACOES_MOCK, type Transacao } from "~/pages/transacoes/transacoes-m
 import { TransacaoDetailPanel } from "~/pages/transacoes/sections/TransacaoDetailPanel";
 import { RESUMO_TEXTOS, indicadoresDoResumo } from "./resumo-mock";
 import {
-  ALTURA_DE_TABELA,
+  LINHA_PROPRIA_NO_TOOLBAR,
   RAIZ_DE_PAGINA,
+  TABELA_DE_PAGINA,
 } from "~/components/altura-de-tabela";
 
 /**
@@ -196,7 +197,7 @@ export function ResumoPage() {
         columns={colunas}
         getRowId={(r) => r.id}
         autoFit
-        className={ALTURA_DE_TABELA}
+        className={TABELA_DE_PAGINA}
         persistId="igreen-mob-cms.resumo"
         allowCreateView={false}
         /* ── Filtros abertos, sem visões ─────────────────────────────────────
@@ -228,14 +229,15 @@ export function ResumoPage() {
              9 pra 39 caracteres quando há período escolhido e empurraria a busca pra
              fora) e `align="end"` pro calendário não vazar à esquerda. */
           customLeft: (
-            <span title={rotuloPeriodo}>
+            /* Mesma decisao de Transacoes, inclusive o `LINHA_PROPRIA_NO_TOOLBAR`. */
+            <span title={rotuloPeriodo} className={LINHA_PROPRIA_NO_TOOLBAR}>
               <DatePicker
                 mode="range"
                 value={periodo}
                 onValueChange={setPeriodo}
                 placeholder="Mês atual"
                 align="end"
-                className="w-[150px]"
+                className="w-[150px] max-md:w-full"
               />
             </span>
           ),

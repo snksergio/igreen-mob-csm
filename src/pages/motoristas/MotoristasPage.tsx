@@ -21,8 +21,9 @@ import {
 import { CelulaDeMotorista, Tags } from "./motoristas-ui";
 import { MotoristaDetailPanel } from "./MotoristaDetailPanel";
 import {
-  ALTURA_DE_TABELA,
+  LINHA_PROPRIA_NO_TOOLBAR,
   RAIZ_DE_PAGINA,
+  TABELA_DE_PAGINA,
 } from "~/components/altura-de-tabela";
 
 /**
@@ -309,7 +310,7 @@ export function MotoristasPage() {
         columns={colunas}
         getRowId={(r) => r.id}
         autoFit
-        className={ALTURA_DE_TABELA}
+        className={TABELA_DE_PAGINA}
         persistId="igreen-mob-cms.motoristas"
         allowCreateView={false}
         showEmptyFilterChips={["tags"]}
@@ -324,13 +325,18 @@ export function MotoristasPage() {
           /* Recorte de tempo no toolbar, ao lado da busca — padrão deste projeto, o mesmo
              de Transações e Repasses. */
           customLeft: (
-            <DatePicker
-              mode="range"
-              value={periodo}
-              onValueChange={setPeriodo}
-              placeholder="Período"
-              className="w-[260px]"
-            />
+            /* O wrapper existe so pro `LINHA_PROPRIA_NO_TOOLBAR`: 260px travados numa
+               fileira de 339 faziam a barra quebrar onde calhava. No celular o seletor
+               fica com a linha 1 inteira; busca e icones dividem a linha 2. */
+            <span className={LINHA_PROPRIA_NO_TOOLBAR}>
+              <DatePicker
+                mode="range"
+                value={periodo}
+                onValueChange={setPeriodo}
+                placeholder="Período"
+                className="w-[260px] max-md:w-full"
+              />
+            </span>
           ),
         }}
         paginationConfig={{

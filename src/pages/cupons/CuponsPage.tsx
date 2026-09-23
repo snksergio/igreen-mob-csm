@@ -21,7 +21,7 @@ import {
 import { StatusChip, TipoChip } from "./cupons-ui";
 import { CupomFormPanel } from "./CupomFormPanel";
 import {
-  ALTURA_DE_TABELA,
+  TABELA_DE_PAGINA,
   RAIZ_DE_PAGINA,
 } from "~/components/altura-de-tabela";
 
@@ -216,7 +216,7 @@ export function CuponsPage() {
         columns={colunas}
         getRowId={(r) => r.id}
         autoFit
-        className={ALTURA_DE_TABELA}
+        className={TABELA_DE_PAGINA}
         persistId="igreen-mob-cms.cupons"
         defaultViews={VISOES}
         /* Abas fixas: o usuário não cria visão própria aqui (L-054). */

@@ -26,8 +26,45 @@
  * Em todo `DataTable`/`DataList` que hoje leva `className="flex-1 min-h-0"`. Se um dia
  * uma tela precisar de outro piso, o lugar de decidir é aqui — não espalhado por treze
  * arquivos.
+ *
+ * ## A segunda regra: o `⋯` some no celular
+ *
+ * O botão **Opções** do `TableToolbar` guarda Exportar e Densidade. Exportar um CSV e
+ * escolher a altura da linha não são tarefas de celular — e os dois ocupam 40px numa
+ * barra onde a busca já entra colapsada em ícone de 45px. Abaixo de `md` ele sai.
+ *
+ * ⚠️ Por CSS, e não desligando `enableExport`/`enableDensity`: as props não são
+ * responsivas, e torná-las condicionais exigiria um `matchMedia` em cada uma das
+ * dezesseis páginas para esconder um botão. `hidden` é `display:none`, então ele sai
+ * também da ordem de foco e da árvore de acessibilidade — não fica um alvo invisível.
+ *
+ * O seletor casa pelo `aria-label`, que é o único atributo estável que o DS põe nesse
+ * botão (não há `data-*`). Se o rótulo mudar de idioma ou de texto, o `⋯` volta a
+ * aparecer no celular — comportamento de hoje, não tela quebrada.
+ *
+ * ## A terceira: a paginação passa a rolar em vez de ser cortada
+ *
+ * 📋 **Lacuna do DS.** O rodapé do `DataTable` desenha UM botão por página, sem
+ * reticências e sem janela deslizante, num `<nav>` `flex-nowrap` com `overflow-x:
+ * visible`. Medido em Transações a 375px, com **sete** páginas: o `<nav>` tem 339px de
+ * `clientWidth` e **370px** de `scrollWidth` — os últimos 31px já saem, e como quem
+ * corta é o `overflow-hidden` de um ancestral, não há barra para rolar: os números
+ * simplesmente não existem para quem está no celular. Com trinta páginas a conta é a
+ * mesma, pior.
+ *
+ * A correção certa é no DS (reticências ou janela de páginas) e está mapeada. Aqui só
+ * devolvemos o acesso: `overflow-x-auto` no `<nav>` faz a fileira rolar.
+ *
+ * ⚠️ `justify-start` junto **não é enfeite**. O DS põe `max-sm:justify-center`, e conteúdo
+ * centralizado que transborda é cortado dos DOIS lados com o início inalcançável — a
+ * barra de rolagem não anda para antes do começo do conteúdo. Centralizar e rolar são
+ * incompatíveis; entre os dois, rolar é o que devolve as páginas.
  */
-export const ALTURA_DE_TABELA = "flex-1 min-h-0 max-lg:min-h-[70vh]";
+export const TABELA_DE_PAGINA = [
+  "flex-1 min-h-0 max-lg:min-h-[70vh]",
+  "max-md:[&_[aria-label='Opções']]:hidden",
+  "max-md:[&_footer_nav]:overflow-x-auto max-md:[&_footer_nav]:justify-start!",
+].join(" ");
 
 /**
  * A raiz de toda página de dados.
@@ -64,3 +101,21 @@ export const RAIZ_DE_PAGINA = "flex flex-col gap-gp-2xl lg:min-h-0 lg:flex-1";
  */
 export const ACOES_EMPILHAVEIS =
   "flex w-full flex-col gap-gp-md [&>*]:w-full sm:w-auto sm:flex-row sm:items-center sm:[&>*]:w-auto";
+
+/**
+ * O controle de recorte do `toolbar.customLeft` ganha a primeira linha inteira no celular.
+ *
+ * O `TableToolbar` põe `customLeft`, busca e os três botões de ícone numa fileira
+ * `flex-wrap`. Medido a 375px em Motoristas, onde o `DatePicker` é `w-[260px]`: a fileira
+ * pede 437px de 339 disponíveis e quebra onde calha — o seletor fica sozinho em cima e os
+ * botões escorregam pra baixo desalinhados. Em Transações cabe numa linha só, mas o
+ * rótulo do período (39 caracteres quando há intervalo escolhido) vive reticenciado nos
+ * 150px travados.
+ *
+ * `w-full` abaixo de `md` transforma o acaso em decisão: o recorte ocupa a linha 1 por
+ * inteiro — e aí o intervalo cabe escrito —, busca e ícones dividem a linha 2 com folga.
+ *
+ * ⚠️ O `DatePicker`/`SelectTrigger` de dentro precisa do `max-md:w-full` **dele**: a
+ * largura travada está na classe do próprio controle, não no wrapper.
+ */
+export const LINHA_PROPRIA_NO_TOOLBAR = "max-md:w-full";

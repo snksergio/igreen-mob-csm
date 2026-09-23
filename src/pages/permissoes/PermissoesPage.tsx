@@ -32,8 +32,9 @@ import { AcessoDetailPanel } from "./AcessoDetailPanel";
 import { AcessoFormPanel } from "./AcessoFormPanel";
 import { PerfisDeAcessoPanel } from "./PerfisDeAcessoPanel";
 import {
-  ALTURA_DE_TABELA,
+  ACOES_EMPILHAVEIS,
   RAIZ_DE_PAGINA,
+  TABELA_DE_PAGINA,
 } from "~/components/altura-de-tabela";
 
 /**
@@ -301,7 +302,11 @@ export function PermissoesPage() {
           </Chip>
         }
         actions={
-          <>
+          /* Wrapper em vez de `<>`: o `PageHeader` do DS estica so o ULTIMO filho no
+             celular (`max-md:[&>:last-child]:flex-1`), entao com dois botoes o primeiro
+             fica na largura natural e os dois se espremem. `ACOES_EMPILHAVEIS` poe os
+             dois em coluna, cada um com 100%. Mesma correcao de Performance. */
+          <div className={ACOES_EMPILHAVEIS}>
             {/* A legenda da referência virou este botão. Ver o JSDoc de
                 `PerfisDeAcessoPanel`: quem já sabe o que é Colaborador não paga 120px de
                 tela por isso em toda visita. */}
@@ -323,7 +328,7 @@ export function PermissoesPage() {
             >
               {PERMISSOES_TEXTOS.conceder}
             </Button>
-          </>
+          </div>
         }
       />
 
@@ -332,7 +337,7 @@ export function PermissoesPage() {
         columns={colunas}
         getRowId={(r) => r.id}
         autoFit
-        className={ALTURA_DE_TABELA}
+        className={TABELA_DE_PAGINA}
         persistId="igreen-mob-cms.permissoes"
         defaultViews={VISOES}
         allowCreateView={false}

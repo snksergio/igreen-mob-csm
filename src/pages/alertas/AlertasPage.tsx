@@ -23,7 +23,7 @@ import { ChipsComResto } from "./alertas-ui";
 import { GrupoDeAlertasPanel } from "./GrupoDeAlertasPanel";
 import { GrupoDeAlertasFormPanel } from "./GrupoDeAlertasFormPanel";
 import {
-  ALTURA_DE_TABELA,
+  TABELA_DE_PAGINA,
   RAIZ_DE_PAGINA,
 } from "~/components/altura-de-tabela";
 
@@ -247,7 +247,7 @@ export function AlertasPage() {
         columns={colunas}
         getRowId={(r) => r.id}
         autoFit
-        className={ALTURA_DE_TABELA}
+        className={TABELA_DE_PAGINA}
         persistId="igreen-mob-cms.alertas"
         allowCreateView={false}
         showEmptyFilterChips={["ativo"]}

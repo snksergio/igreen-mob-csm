@@ -15,8 +15,9 @@ import { construirColunas } from "./transacoes-columns";
 import { TRANSACOES_MOCK, type Transacao } from "./transacoes-mock";
 import { TransacaoDetailPanel } from "./sections/TransacaoDetailPanel";
 import {
-  ALTURA_DE_TABELA,
+  LINHA_PROPRIA_NO_TOOLBAR,
   RAIZ_DE_PAGINA,
+  TABELA_DE_PAGINA,
 } from "~/components/altura-de-tabela";
 
 /**
@@ -141,7 +142,7 @@ export function TransacoesPage() {
            Idiom do DS, não invenção nossa: é o que a tela de Financeiro do showcase
            passa (`ClientesFinanceiroShowcase.tsx:797`). Exige pai com altura — o
            wrapper acima é `flex min-h-0 flex-1 flex-col`. */
-        className={ALTURA_DE_TABELA}
+        className={TABELA_DE_PAGINA}
         /* `persistId` NAO e opcional aqui: a barra de visoes so renderiza quando
            `persistId && defaultViews.length > 0` (data-table.tsx:1766). Sem ele o
            `defaultViews` e aceito, compila, e as abas simplesmente nao aparecem — sem
@@ -171,7 +172,9 @@ export function TransacoesPage() {
              como recuperá-lo: "11 de set. de 20…" não diz até quando. O hover devolve
              o intervalo inteiro. */
           customLeft: (
-            <span title={rotuloPeriodo}>
+            /* `LINHA_PROPRIA_NO_TOOLBAR`: no celular o recorte ocupa a linha inteira e
+               o intervalo cabe escrito, em vez de viver reticenciado nos 150px. */
+            <span title={rotuloPeriodo} className={LINHA_PROPRIA_NO_TOOLBAR}>
             <DatePicker
               mode="range"
               value={periodo}
@@ -187,7 +190,7 @@ export function TransacoesPage() {
                  (datepicker.tsx:180), então só faltava o teto: com largura fixa ele
                  reticencia em vez de esticar. Px na unha de propósito — a escala de
                  container do DS começa em 480px e não serve pra controle de toolbar. */
-              className="w-[150px]"
+              className="w-[150px] max-md:w-full"
             />
             </span>
           ),

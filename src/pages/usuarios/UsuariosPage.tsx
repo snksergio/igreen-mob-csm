@@ -21,7 +21,7 @@ import {
 import { UsuarioDetailPanel } from "./UsuarioDetailPanel";
 import { avisoDeExcluido } from "~/components/feedback";
 import {
-  ALTURA_DE_TABELA,
+  TABELA_DE_PAGINA,
   RAIZ_DE_PAGINA,
 } from "~/components/altura-de-tabela";
 
@@ -320,7 +320,7 @@ export function UsuariosPage() {
         columns={colunas}
         getRowId={(r) => r.id}
         autoFit
-        className={ALTURA_DE_TABELA}
+        className={TABELA_DE_PAGINA}
         /* `persistId` NÃO é opcional com visões: a barra de abas só renderiza quando
            `persistId && defaultViews.length > 0`. Sem ele o `defaultViews` compila e as
            abas simplesmente não aparecem. */

@@ -50,7 +50,7 @@ import {
 import { ImplantacaoFormPanel } from "./ImplantacaoFormPanel";
 import { PanelComAbas } from "./PanelComAbas";
 import {
-  ALTURA_DE_TABELA,
+  TABELA_DE_PAGINA,
   RAIZ_DE_PAGINA,
 } from "~/components/altura-de-tabela";
 
@@ -518,7 +518,7 @@ export function ImplantacoesPage() {
            Se o DS parar de emitir esses atributos, o board volta ao tamanho compacto —
            degradação visível, não tela quebrada. */
         className={[
-          ALTURA_DE_TABELA,
+          TABELA_DE_PAGINA,
           /* Só de `sm` para cima: 344px numa tela de 375 não deixaria ver um cartão
              inteiro sem rolar. No celular vale o 296 do DS, que cabe. */
           "sm:[&_[data-column-id]]:w-[344px]",

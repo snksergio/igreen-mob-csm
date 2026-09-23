@@ -11,7 +11,7 @@ import { construirColunas } from "./precos-columns";
 import { PrecoDetailPanel } from "./PrecoDetailPanel";
 import { ModalCriarPerfil } from "./precos-modais";
 import {
-  ALTURA_DE_TABELA,
+  TABELA_DE_PAGINA,
   RAIZ_DE_PAGINA,
 } from "~/components/altura-de-tabela";
 
@@ -85,7 +85,7 @@ export function PrecosPage() {
         /* ⚠️ `flex-1 min-h-0` é o que mantém a paginação sempre visível — o mecanismo interno
            do `DataTable` só ARMA quando a raiz tem altura limitada. Mesmo idiom das outras
            quatro telas de tabela. */
-        className={ALTURA_DE_TABELA}
+        className={TABELA_DE_PAGINA}
         persistId="igreen-mob-cms.precos"
         allowCreateView={false}
         onRowClick={(row) => setEmEdicao(row)}

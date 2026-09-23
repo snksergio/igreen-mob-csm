@@ -126,6 +126,7 @@ export function PainelDeFiltros({
   onFechar,
   contagemDeStatus,
   contagemDePotencia,
+  className,
 }: {
   filtros: EstadoDosFiltros;
   /** O conjunto completo — é contra ele que "Todas" e o link de reset se medem. */
@@ -137,6 +138,15 @@ export function PainelDeFiltros({
   /** ⚠️ Contagem de cada opção ANTES do filtro do PRÓPRIO grupo — ver o JSDoc da página. */
   contagemDeStatus: Record<StatusPlugue, number>;
   contagemDePotencia: Record<FaixaDePotencia, number>;
+  /**
+   * Substitui a moldura de COLUNA por outra.
+   *
+   * O corpo do painel (grupos, opções, contagens) é o mesmo nos dois lugares; o que
+   * muda é o entorno. Como coluna ele é `w-[280px] h-full` com borda e cantos; dentro
+   * de um `Sheet` no celular ele é `w-full` sem borda — a folha já tem a dela, e duas
+   * bordas concêntricas leem como card dentro de card.
+   */
+  className?: string;
 }) {
   /* O que restringe a tela é o que está DE FORA — ver `desmarcados` na página. */
   const desmarcados =
@@ -150,7 +160,10 @@ export function PainelDeFiltros({
       /* `w-[280px] shrink-0` — largura fixa e não fração: as linhas de opção têm rótulo,
          caixa e contagem, e uma fração de viewport as quebraria em telas médias.
          `h-full` + `overflow-y-auto` é o que cumpre "mesma altura do mapa, com scroll". */
-      className="flex h-full w-[280px] shrink-0 flex-col overflow-y-auto rounded-radius-xl border border-border-default bg-bg-surface scrollbar-thin"
+      className={
+        className ??
+        "flex h-full w-[280px] shrink-0 flex-col overflow-y-auto rounded-radius-xl border border-border-default bg-bg-surface scrollbar-thin"
+      }
     >
       <div className={SECAO_CABECALHO}>
         <div className="flex items-center justify-between gap-gp-md">

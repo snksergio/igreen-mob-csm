@@ -33,6 +33,21 @@ import type { AcoesDaEstrutura } from "./estrutura-columns";
  * As quatro seguintes são fixas, então CNPJ, endereço, responsável e as ações caem no mesmo
  * x em todas as linhas — independentemente de quantos níveis de indentação a linha tem,
  * porque a indentação encolhe só a primeira coluna.
+ *
+ * ## ⚠️ No celular são DUAS colunas, não cinco
+ *
+ * As três `Coluna` são `hidden md:flex` desde o começo — mas isso escondia o CONTEÚDO e
+ * deixava as PISTAS de pé. O grid seguia pedindo `150px + 240px + 150px + 196px` = 736px
+ * de trilhas fixas, mais quatro gaps de 32px, dentro de um card de 339px. A única trilha
+ * elástica ficava com o que sobrava de um número negativo: o nome e o e-mail espremidos a
+ * poucos pixels e os botões de ação empurrados para fora da tela.
+ *
+ * Era isso que o operador viu no celular como "a visão de lista está completamente
+ * bugada" — e não dava para atribuir ao `DataTable`: a conta errada é deste arquivo.
+ *
+ * Abaixo de `md` o grid tem duas trilhas — identidade e ações — e o gap cai de `3xl` para
+ * `lg`. As três `Coluna` continuam `display:none`, que o grid remove da caixa: elas não
+ * consomem célula e não empurram nada para uma segunda linha implícita.
  */
 
 const ICONE_DO_NIVEL: Record<NivelDaRede, typeof Network> = {
@@ -166,7 +181,9 @@ export function CartaoDaEstrutura({
   const locais = no.nivel === "empresa" ? locaisDaEmpresa(no.id).length : 0;
 
   return (
-    <div className="grid w-full grid-cols-[minmax(0,1fr)_150px_240px_150px_196px] items-center gap-gp-3xl">
+    <div
+      className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-gp-lg md:grid-cols-[minmax(0,1fr)_150px_240px_150px_196px] md:gap-gp-3xl"
+    >
       {/* 1 — identidade. A ÚNICA coluna elástica: é ela que absorve a indentação. */}
       <div className="flex min-w-0 items-center gap-gp-lg">
         <span

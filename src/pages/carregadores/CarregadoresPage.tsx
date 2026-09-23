@@ -9,7 +9,7 @@ import { CarregadorDetailPanel } from "./CarregadorDetailPanel";
 import { ModalExcluirCarregador } from "./carregadores-modais";
 import { ModalAdicionarCarregador } from "./ModalAdicionarCarregador";
 import {
-  ALTURA_DE_TABELA,
+  TABELA_DE_PAGINA,
   RAIZ_DE_PAGINA,
 } from "~/components/altura-de-tabela";
 
@@ -94,7 +94,7 @@ export function CarregadoresPage() {
         autoFit
         /* ⚠️ `flex-1 min-h-0` é o que mantém a paginação sempre visível — mesmo idiom das
            outras cinco telas de tabela. */
-        className={ALTURA_DE_TABELA}
+        className={TABELA_DE_PAGINA}
         persistId="igreen-mob-cms.carregadores"
         allowCreateView={false}
         onRowClick={(row) => setEmEdicao(row)}

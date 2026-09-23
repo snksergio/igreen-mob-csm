@@ -15,7 +15,7 @@ import {
   type NoDaRede,
 } from "~/pages/estrutura-rede/estrutura-mock";
 import {
-  ALTURA_DE_TABELA,
+  TABELA_DE_PAGINA,
   RAIZ_DE_PAGINA,
 } from "~/components/altura-de-tabela";
 import { LocalFormPanel } from "~/pages/estrutura-rede/LocalFormPanel";
@@ -279,7 +279,7 @@ export function LocaisPage() {
            por um motivo que não vale aqui: aquela tela tem mapa e barra ACIMA da tabela,
            então a página inteira rola e a tabela precisa de um teto próprio. Esta tem só
            cabeçalho e grade — é o caso normal. */
-        className={`${ALTURA_DE_TABELA} [&_.scrollbar-thin]:[scrollbar-gutter:stable]`}
+        className={`${TABELA_DE_PAGINA} [&_.scrollbar-thin]:[scrollbar-gutter:stable]`}
         /* `persistId` NÃO é opcional com visões: a barra de abas só renderiza quando
            `persistId && defaultViews.length > 0`. Sem ele o `defaultViews` compila e as
            abas simplesmente não aparecem. */

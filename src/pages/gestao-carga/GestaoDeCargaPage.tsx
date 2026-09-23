@@ -15,7 +15,7 @@ import {
 import { Potencia } from "./gestao-carga-ui";
 import { GestaoDeCargaDetailPanel } from "./GestaoDeCargaDetailPanel";
 import {
-  ALTURA_DE_TABELA,
+  TABELA_DE_PAGINA,
   RAIZ_DE_PAGINA,
 } from "~/components/altura-de-tabela";
 
@@ -128,7 +128,7 @@ export function GestaoDeCargaPage() {
         /* ⚠️ `flex-1 min-h-0` é o que mantém a paginação sempre visível. O mecanismo
            interno do `DataTable` só ARMA quando a raiz tem altura limitada — mesma razão e
            mesmo idiom das outras três telas de tabela. */
-        className={ALTURA_DE_TABELA}
+        className={TABELA_DE_PAGINA}
         persistId="igreen-mob-cms.gestao-carga"
         /* Sem visões pré-definidas: esta tela não tem status nem período pra recortar. O
            "+" sai junto, senão sobraria o convite de salvar um recorte que não existe. */

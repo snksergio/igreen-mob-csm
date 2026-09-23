@@ -22,8 +22,9 @@ import { LocalFormPanel } from "./LocalFormPanel";
 import { CartaoDaEstrutura } from "./estrutura-cartao";
 import { avisoDeExcluido } from "~/components/feedback";
 import {
-  ALTURA_DE_TABELA,
+  LINHA_PROPRIA_NO_TOOLBAR,
   RAIZ_DE_PAGINA,
+  TABELA_DE_PAGINA,
 } from "~/components/altura-de-tabela";
 
 /**
@@ -177,7 +178,7 @@ export function EstruturaDaRedePage() {
            `max-h-[72vh]` que estava aqui veio do Monitoramento, onde existe porque a
            página inteira rola (mapa e barra acima da tabela). Aqui não há nada acima além
            do cabeçalho — é o caso normal. */
-        ALTURA_DE_TABELA,
+        TABELA_DE_PAGINA,
         /* `scrollbar-gutter: stable` — a calha da barra vertical fica reservada desde o
            início, então expandir a árvore não empurra as colunas.
 
@@ -258,7 +259,13 @@ export function EstruturaDaRedePage() {
              como texto desabilitado. Este é o componente que a própria toolbar usa nas
              ações dela, então o alinhamento é por construção, não por imitação. */
           customLeft: (
-            <span className="flex items-center gap-gp-xs">
+            /* `LINHA_PROPRIA_NO_TOOLBAR` a pedido do operador: no celular os dois
+               botoes ficam sozinhos na primeira linha e a busca desce pra segunda.
+               Antes eles dividiam a fileira com a busca e os icones, e a quebra caia
+               no meio do par. */
+            <span
+              className={`flex items-center gap-gp-xs ${LINHA_PROPRIA_NO_TOOLBAR}`}
+            >
               <ToolbarToolButton
                 icon={<ChevronsUpDown />}
                 label="Expandir"

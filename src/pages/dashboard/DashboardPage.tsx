@@ -55,6 +55,27 @@ import { AbaCarregadores } from "./AbaCarregadores";
  * Sem `fullWidth`: a doc desaconselha em página livre, e três abas esticadas na largura
  * inteira leem como filtro, não como seções.
  *
+ * ## No celular o ícone sai e o rótulo fica
+ *
+ * Medido a 375px: a `TabsList` é `inline-flex w-fit` com `whitespace-nowrap` nos três
+ * gatilhos — 386px de conteúdo dentro de um pai de 339. Ela começa em x=18 e termina em
+ * 404, e o `overflow-hidden` de cima corta "Carregadores" sem deixar rolar: o
+ * `scrollWidth` do documento continua 375. A aba some da tela e não há como alcançá-la.
+ *
+ * Abaixo de `sm` a tira vira `flex w-full` e os três **encolhem** em vez de vazar. Duas
+ * decisões dentro disso:
+ *
+ * - **o ícone sai** (`max-sm:hidden`). Ele custa 26px por aba e é redundante com um
+ *   rótulo que cabe: sem ícone os três naturais somam 298px nos 339 disponíveis, e
+ *   ninguém trunca. Com ícone, sobra corte em dois.
+ * - **a aba ativa não encolhe** (`data-[state=active]:shrink-0`), as outras sim, com
+ *   `truncate` no rótulo. Numa tela mais estreita que 375 o nome da seção em que a
+ *   pessoa está continua inteiro, e as vizinhas viram "Carrega…" — que ainda é
+ *   clicável, e ao ser escolhida se abre por inteiro.
+ *
+ * Não vira `fullWidth`: `flex` sem `grow` mantém a largura natural de cada gatilho e a
+ * tira encostada à esquerda, que é o desenho de cima.
+ *
  * ## O conteúdo NÃO usa `TabsContent`
  *
  * As três abas são pesadas (gráficos, listas de 17 a 30 itens, 18 faixas de
@@ -122,11 +143,16 @@ export function DashboardPage() {
       />
 
       <Tabs value={aba} onValueChange={(v) => setAba(v as AbaId)}>
-        <TabsList>
+        <TabsList className="max-sm:flex max-sm:w-full">
           {ABAS.map((a) => (
-            <TabsTrigger key={a.id} value={a.id} aria-controls="painel-do-dashboard">
-              <a.icone className="size-icon-md" aria-hidden />
-              {a.rotulo}
+            <TabsTrigger
+              key={a.id}
+              value={a.id}
+              aria-controls="painel-do-dashboard"
+              className="min-w-0 data-[state=active]:shrink-0"
+            >
+              <a.icone className="size-icon-md shrink-0 max-sm:hidden" aria-hidden />
+              <span className="truncate">{a.rotulo}</span>
             </TabsTrigger>
           ))}
         </TabsList>
