@@ -137,7 +137,8 @@ export function PerformancePage() {
   );
 
   return (
-    <div className="flex flex-col gap-gp-2xl">
+    /* `max-lg:pb-pad-4xl` pelo mesmo motivo de `RAIZ_DE_PAGINA` — ver o JSDoc dela. */
+    <div className="flex flex-col gap-gp-2xl max-lg:pb-pad-4xl">
       <PageHeader
         title="Performance"
         /* Texto literal da referência — o aviso recorrente do escopo global. */

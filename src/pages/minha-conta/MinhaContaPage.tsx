@@ -171,7 +171,8 @@ export function MinhaContaPage() {
   };
 
   return (
-    <div className="flex flex-col gap-gp-2xl">
+    /* `max-lg:pb-pad-4xl` pelo mesmo motivo de `RAIZ_DE_PAGINA` — ver o JSDoc dela. */
+    <div className="flex flex-col gap-gp-2xl max-lg:pb-pad-4xl">
       <PageHeader
         title="Minha conta"
         description="Seus dados de cadastro, preferências e senha de acesso."

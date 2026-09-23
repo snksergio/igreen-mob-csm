@@ -72,9 +72,18 @@ import { AbaCarregadores } from "./AbaCarregadores";
  *   `truncate` no rótulo. Numa tela mais estreita que 375 o nome da seção em que a
  *   pessoa está continua inteiro, e as vizinhas viram "Carrega…" — que ainda é
  *   clicável, e ao ser escolhida se abre por inteiro.
+ * - **as três crescem para preencher a tira** (`flex-auto`). Sem isso elas ficavam na
+ *   largura natural (97 + 91 + 110 = 298) dentro de uma tira de 339, e sobrava uma
+ *   falha de ~30px à direita — o fundo do segmented continuava desenhado sem nada em
+ *   cima, e lia como aba faltando.
  *
- * Não vira `fullWidth`: `flex` sem `grow` mantém a largura natural de cada gatilho e a
- * tira encostada à esquerda, que é o desenho de cima.
+ * ⚠️ `flex-auto` (`flex: 1 1 auto`) e **não** `flex-1` (`flex: 1 1 0%`). `flex-1`
+ * ignora a largura natural e dá um terço a cada uma — 109px, e "Carregadores" precisa
+ * de 110: a aba mais longa truncaria numa tira que tem espaço de sobra. `flex-auto`
+ * parte do natural e reparte só o que sobra, então ninguém trunca enquanto couber.
+ *
+ * Não vira `fullWidth`: o preenchimento é do celular, onde a tira é `w-full`. De `sm`
+ * para cima ela volta a ser `w-fit` encostada à esquerda, que é o desenho de cima.
  *
  * ## O conteúdo NÃO usa `TabsContent`
  *
@@ -115,7 +124,9 @@ export function DashboardPage() {
   const dias = diasNoPeriodo(periodo);
 
   return (
-    <div className="flex flex-col gap-gp-2xl">
+    /* `max-lg:pb-pad-4xl` pelo mesmo motivo de `RAIZ_DE_PAGINA` — ver o JSDoc dela:
+       o padding do invólucro do `AppShell` não alcança o conteúdo que transborda. */
+    <div className="flex flex-col gap-gp-2xl max-lg:pb-pad-4xl">
       <PageHeader
         title="Dashboard"
         description={DASHBOARD_TEXTOS.aviso}
@@ -149,7 +160,7 @@ export function DashboardPage() {
               key={a.id}
               value={a.id}
               aria-controls="painel-do-dashboard"
-              className="min-w-0 data-[state=active]:shrink-0"
+              className="min-w-0 data-[state=active]:shrink-0 max-sm:flex-auto"
             >
               <a.icone className="size-icon-md shrink-0 max-sm:hidden" aria-hidden />
               <span className="truncate">{a.rotulo}</span>

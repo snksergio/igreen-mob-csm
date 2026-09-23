@@ -44,16 +44,30 @@
  *
  * ## A terceira: a paginação passa a rolar em vez de ser cortada
  *
- * 📋 **Lacuna do DS.** O rodapé do `DataTable` desenha UM botão por página, sem
- * reticências e sem janela deslizante, num `<nav>` `flex-nowrap` com `overflow-x:
- * visible`. Medido em Transações a 375px, com **sete** páginas: o `<nav>` tem 339px de
- * `clientWidth` e **370px** de `scrollWidth` — os últimos 31px já saem, e como quem
- * corta é o `overflow-hidden` de um ancestral, não há barra para rolar: os números
- * simplesmente não existem para quem está no celular. Com trinta páginas a conta é a
- * mesma, pior.
+ * 📋 **Lacuna do DS — estreita, e não a que eu disse primeiro.** A versão anterior
+ * desta nota afirmava que o rodapé do `DataTable` *"desenha um botão por página, sem
+ * reticências e sem janela deslizante"*. **É falso.** O operador apontou o `…` no
+ * componente do showcase e a medição confirmou: o rodapé JANELA, a partir de **oito**
+ * páginas.
  *
- * A correção certa é no DS (reticências ou janela de páginas) e está mapeada. Aqui só
- * devolvemos o acesso: `overflow-x-auto` no `<nav>` faz a fileira rolar.
+ * Medido em Transações a 375px, variando `initialPageSize` sobre as mesmas 64 linhas
+ * (`clientWidth` do `<nav>` = 339 nos cinco casos):
+ *
+ * | páginas | o que desenha   | `scrollWidth` |
+ * |---------|-----------------|---------------|
+ * | 5       | `1 2 3 4 5`     | 339 ✅        |
+ * | 6       | `1 2 3 4 5 6`   | **368** ❌    |
+ * | 7       | `1 2 3 4 5 6 7` | **400** ❌    |
+ * | 8       | `1 2 … 7 8`     | 339 ✅        |
+ * | 32      | `1 2 … 31 32`   | 339 ✅        |
+ *
+ * Ou seja: a janela existe e funciona; ela só **não entra a tempo**. Entre seis e sete
+ * páginas o rodapé desenha tudo, e num `<nav>` `flex-nowrap` com `overflow-x: visible`
+ * o excedente é cortado por um ancestral — sem barra, sem alcance. É uma faixa
+ * estreita, e é exatamente onde as nossas tabelas caem com 10 linhas por página.
+ *
+ * A correção certa é no DS (janelar por LARGURA, não por contagem) e está mapeada.
+ * Aqui só devolvemos o acesso: `overflow-x-auto` no `<nav>` faz a fileira rolar.
  *
  * ⚠️ `justify-start` junto **não é enfeite**. O DS põe `max-sm:justify-center`, e conteúdo
  * centralizado que transborda é cortado dos DOIS lados com o início inalcançável — a
@@ -85,8 +99,21 @@ export const TABELA_DE_PAGINA = [
  *
  * De `lg` para cima nada muda: `lg:min-h-0 lg:flex-1` devolve o layout de altura fixa,
  * que é o que faz a tabela ocupar o resto da tela sem a página rolar.
+ *
+ * ## O respiro no fim — `max-lg:pb-pad-4xl`
+ *
+ * O último bloco (a paginação, quase sempre) encostava na borda de baixo do celular.
+ * O invólucro do `AppShell` TEM 18px de `padding-bottom`, e eles não valem: medido em
+ * Transações a 375×812, aquele invólucro é um item de flex de altura travada em 752px
+ * enquanto o conteúdo pede 902 — o rodapé sai em y=776..812 **fora** da caixa dele, e
+ * padding não acompanha o que transborda.
+ *
+ * Por isso os 24px vão na NOSSA raiz, que é o elemento que transborda: aí eles fazem
+ * parte do conteúdo rolável e sobram de verdade embaixo. Só abaixo de `lg`, onde a
+ * página rola; acima disso a tabela ocupa a altura fixa e o padding só roubaria linha.
  */
-export const RAIZ_DE_PAGINA = "flex flex-col gap-gp-2xl lg:min-h-0 lg:flex-1";
+export const RAIZ_DE_PAGINA =
+  "flex flex-col gap-gp-2xl max-lg:pb-pad-4xl lg:min-h-0 lg:flex-1";
 
 /**
  * O grupo de ações do `PageHeader` no celular.
