@@ -67,7 +67,19 @@
  * estreita, e é exatamente onde as nossas tabelas caem com 10 linhas por página.
  *
  * A correção certa é no DS (janelar por LARGURA, não por contagem) e está mapeada.
- * Aqui só devolvemos o acesso: `overflow-x-auto` no `<nav>` faz a fileira rolar.
+ * Aqui fazemos a fileira **caber**, em dois passos:
+ *
+ * 1. **`«` e `»` saem no celular.** Eles custam 36px cada, mais os gaps: 80px dos 400.
+ *    E são redundantes em TODA configuração dessa barra, não só na faixa que estoura —
+ *    o rodapé sempre desenha a primeira e a última página como NÚMERO, inclusive
+ *    janelado (`1 2 … 31 32`). Quem quer o fim toca o `32`. Num celular, dois alvos a
+ *    menos numa fileira apertada valem mais que um atalho que já existe ao lado.
+ * 2. **`overflow-x-auto` fica como rede.** Depois do passo 1 a fileira mede 320 de 339
+ *    e não precisa rolar; a rolagem cobre o dia em que um rótulo maior, uma fonte
+ *    ampliada ou uma tela de 320px empurrarem de novo.
+ *
+ * Medido depois, em Resumo a 375px com sete páginas: `scrollWidth` 320, `clientWidth`
+ * 339 — a última página passa a nascer dentro da tela, sem arrastar.
  *
  * ⚠️ `justify-start` junto **não é enfeite**. O DS põe `max-sm:justify-center`, e conteúdo
  * centralizado que transborda é cortado dos DOIS lados com o início inalcançável — a
@@ -78,6 +90,8 @@ export const TABELA_DE_PAGINA = [
   "flex-1 min-h-0 max-lg:min-h-[70vh]",
   "max-md:[&_[aria-label='Opções']]:hidden",
   "max-md:[&_footer_nav]:overflow-x-auto max-md:[&_footer_nav]:justify-start!",
+  "max-md:[&_footer_nav_[aria-label='Primeira_página']]:hidden",
+  "max-md:[&_footer_nav_[aria-label='Última_página']]:hidden",
 ].join(" ");
 
 /**
