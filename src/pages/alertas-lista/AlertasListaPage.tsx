@@ -22,6 +22,7 @@ import {
   type Alerta,
 } from "./alertas-lista-mock";
 import { AlertaDetailPanel } from "./AlertaDetailPanel";
+import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
 
 /**
  * Tela de Alertas — a lista ao vivo, medida em `/pt/alerts` (2026-09-16).
@@ -369,7 +370,7 @@ export function AlertasListaPage() {
         columns={colunas}
         getRowId={(r) => r.id}
         autoFit
-        className="flex-1 min-h-0"
+        className={ALTURA_DE_TABELA}
         persistId="igreen-mob-cms.alertas-lista"
         defaultViews={VISOES}
         allowCreateView={false}

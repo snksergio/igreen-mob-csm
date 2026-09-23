@@ -20,6 +20,7 @@ import {
 } from "./usuarios-mock";
 import { UsuarioDetailPanel } from "./UsuarioDetailPanel";
 import { avisoDeExcluido } from "~/components/feedback";
+import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
 
 /**
  * Tela de Usuários — medida em `/pt/settings/users?page=1` (2026-09-16).
@@ -316,7 +317,7 @@ export function UsuariosPage() {
         columns={colunas}
         getRowId={(r) => r.id}
         autoFit
-        className="flex-1 min-h-0"
+        className={ALTURA_DE_TABELA}
         /* `persistId` NÃO é opcional com visões: a barra de abas só renderiza quando
            `persistId && defaultViews.length > 0`. Sem ele o `defaultViews` compila e as
            abas simplesmente não aparecem. */

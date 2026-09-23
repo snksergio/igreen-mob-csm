@@ -21,6 +21,7 @@ import {
 import { ChipDeNivel, ChipDeSituacao } from "./splits-ui";
 import { SplitDetailPanel } from "./SplitDetailPanel";
 import { SplitFormPanel } from "./SplitFormPanel";
+import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
 
 /**
  * Tela de Splits — medida em `/pt/financial/split?page=1` (2026-09-17).
@@ -245,7 +246,7 @@ export function SplitsPage() {
         columns={colunas}
         getRowId={(r) => r.id}
         autoFit
-        className="flex-1 min-h-0"
+        className={ALTURA_DE_TABELA}
         /* ⚠️ `.v2` na chave: o `DataTable` persiste a ORDEM das colunas, e coluna
            acrescentada depois nasce no FIM da ordem guardada. Medido: com a chave antiga,
            a `Nível` renderizava depois de `Situação` mesmo estando em segundo lugar no

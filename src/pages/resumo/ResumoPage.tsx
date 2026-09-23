@@ -24,6 +24,7 @@ import { construirColunas } from "~/pages/transacoes/transacoes-columns";
 import { TRANSACOES_MOCK, type Transacao } from "~/pages/transacoes/transacoes-mock";
 import { TransacaoDetailPanel } from "~/pages/transacoes/sections/TransacaoDetailPanel";
 import { RESUMO_TEXTOS, indicadoresDoResumo } from "./resumo-mock";
+import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
 
 /**
  * Tela de Resumo — medida em `/pt/resume?period=thisMonth&page=1` (2026-09-16).
@@ -192,7 +193,7 @@ export function ResumoPage() {
         columns={colunas}
         getRowId={(r) => r.id}
         autoFit
-        className="flex-1 min-h-0"
+        className={ALTURA_DE_TABELA}
         persistId="igreen-mob-cms.resumo"
         allowCreateView={false}
         /* ── Filtros abertos, sem visões ─────────────────────────────────────

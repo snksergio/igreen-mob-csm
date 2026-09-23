@@ -22,6 +22,7 @@ import { avisoDeExcluido } from "~/components/feedback";
 import { ChipsComResto } from "./alertas-ui";
 import { GrupoDeAlertasPanel } from "./GrupoDeAlertasPanel";
 import { GrupoDeAlertasFormPanel } from "./GrupoDeAlertasFormPanel";
+import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
 
 /**
  * Tela de Configuração de grupos de alertas — medida em `/pt/alert-groups?page=1`
@@ -243,7 +244,7 @@ export function AlertasPage() {
         columns={colunas}
         getRowId={(r) => r.id}
         autoFit
-        className="flex-1 min-h-0"
+        className={ALTURA_DE_TABELA}
         persistId="igreen-mob-cms.alertas"
         allowCreateView={false}
         showEmptyFilterChips={["ativo"]}

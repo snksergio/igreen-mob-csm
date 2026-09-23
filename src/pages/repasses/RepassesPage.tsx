@@ -19,6 +19,7 @@ import { LOCAIS } from "~/pages/transacoes/transacoes-mock";
 import { ANOS, REPASSES, type Repasse } from "./repasses-mock";
 import { construirColunas } from "./repasses-columns";
 import { RepasseDetailPanel } from "./RepasseDetailPanel";
+import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
 
 /**
  * Tela de Repasses — medida em `/pt/financial/transfers` (2026-09-16).
@@ -133,7 +134,7 @@ export function RepassesPage() {
            entrega o `<Table>` interno com `min-h-0 max-h-full` e o container de scroll
            dele é `flex-1 min-h-0 overflow-auto`, mas esse mecanismo só ARMA quando a raiz
            tem altura limitada. Mesma razão e mesmo idiom de Transações. */
-        className="flex-1 min-h-0"
+        className={ALTURA_DE_TABELA}
         /* `persistId` NÃO é opcional: a barra de visões só renderiza com
            `persistId && defaultViews.length > 0` (data-table.tsx:1766). Sem ele o
            `defaultViews` é aceito, compila, e as abas simplesmente não aparecem. */

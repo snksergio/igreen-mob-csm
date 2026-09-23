@@ -14,6 +14,7 @@ import {
 } from "./gestao-carga-mock";
 import { Potencia } from "./gestao-carga-ui";
 import { GestaoDeCargaDetailPanel } from "./GestaoDeCargaDetailPanel";
+import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
 
 /**
  * Tela de Gestão de Carga — medida em `/pt/smartspott?page=1` (2026-09-16).
@@ -124,7 +125,7 @@ export function GestaoDeCargaPage() {
         /* ⚠️ `flex-1 min-h-0` é o que mantém a paginação sempre visível. O mecanismo
            interno do `DataTable` só ARMA quando a raiz tem altura limitada — mesma razão e
            mesmo idiom das outras três telas de tabela. */
-        className="flex-1 min-h-0"
+        className={ALTURA_DE_TABELA}
         persistId="igreen-mob-cms.gestao-carga"
         /* Sem visões pré-definidas: esta tela não tem status nem período pra recortar. O
            "+" sai junto, senão sobraria o convite de salvar um recorte que não existe. */

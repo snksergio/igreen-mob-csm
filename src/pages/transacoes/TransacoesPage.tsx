@@ -14,6 +14,7 @@ import { dentroDoPeriodo, rotuloDoPeriodo } from "~/components/periodo";
 import { construirColunas } from "./transacoes-columns";
 import { TRANSACOES_MOCK, type Transacao } from "./transacoes-mock";
 import { TransacaoDetailPanel } from "./sections/TransacaoDetailPanel";
+import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
 
 /**
  * As duas visões fixas.
@@ -137,7 +138,7 @@ export function TransacoesPage() {
            Idiom do DS, não invenção nossa: é o que a tela de Financeiro do showcase
            passa (`ClientesFinanceiroShowcase.tsx:797`). Exige pai com altura — o
            wrapper acima é `flex min-h-0 flex-1 flex-col`. */
-        className="flex-1 min-h-0"
+        className={ALTURA_DE_TABELA}
         /* `persistId` NAO e opcional aqui: a barra de visoes so renderiza quando
            `persistId && defaultViews.length > 0` (data-table.tsx:1766). Sem ele o
            `defaultViews` e aceito, compila, e as abas simplesmente nao aparecem — sem

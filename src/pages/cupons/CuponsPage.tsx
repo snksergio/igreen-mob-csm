@@ -20,6 +20,7 @@ import {
 } from "./cupons-mock";
 import { StatusChip, TipoChip } from "./cupons-ui";
 import { CupomFormPanel } from "./CupomFormPanel";
+import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
 
 /**
  * Tela de Cupons — medida em `/pt/coupons?page=1` (2026-09-16).
@@ -212,7 +213,7 @@ export function CuponsPage() {
         columns={colunas}
         getRowId={(r) => r.id}
         autoFit
-        className="flex-1 min-h-0"
+        className={ALTURA_DE_TABELA}
         persistId="igreen-mob-cms.cupons"
         defaultViews={VISOES}
         /* Abas fixas: o usuário não cria visão própria aqui (L-054). */

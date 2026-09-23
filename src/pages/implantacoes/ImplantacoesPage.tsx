@@ -49,6 +49,7 @@ import {
 } from "./implantacoes-ui";
 import { ImplantacaoFormPanel } from "./ImplantacaoFormPanel";
 import { PanelComAbas } from "./PanelComAbas";
+import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
 
 /**
  * Funil de implantação — Kanban e tabela sobre os mesmos dados.
@@ -514,7 +515,7 @@ export function ImplantacoesPage() {
            Se o DS parar de emitir esses atributos, o board volta ao tamanho compacto —
            degradação visível, não tela quebrada. */
         className={[
-          "flex-1 min-h-0",
+          ALTURA_DE_TABELA,
           /* Só de `sm` para cima: 344px numa tela de 375 não deixaria ver um cartão
              inteiro sem rolar. No celular vale o 296 do DS, que cabe. */
           "sm:[&_[data-column-id]]:w-[344px]",

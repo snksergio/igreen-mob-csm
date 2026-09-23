@@ -20,6 +20,7 @@ import {
 } from "./motoristas-mock";
 import { CelulaDeMotorista, Tags } from "./motoristas-ui";
 import { MotoristaDetailPanel } from "./MotoristaDetailPanel";
+import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
 
 /**
  * Tela de Motoristas — medida em `/pt/drivers?page=1` (2026-09-16).
@@ -305,7 +306,7 @@ export function MotoristasPage() {
         columns={colunas}
         getRowId={(r) => r.id}
         autoFit
-        className="flex-1 min-h-0"
+        className={ALTURA_DE_TABELA}
         persistId="igreen-mob-cms.motoristas"
         allowCreateView={false}
         showEmptyFilterChips={["tags"]}
