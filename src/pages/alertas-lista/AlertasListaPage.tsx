@@ -22,7 +22,10 @@ import {
   type Alerta,
 } from "./alertas-lista-mock";
 import { AlertaDetailPanel } from "./AlertaDetailPanel";
-import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
+import {
+  ALTURA_DE_TABELA,
+  RAIZ_DE_PAGINA,
+} from "~/components/altura-de-tabela";
 
 /**
  * Tela de Alertas — a lista ao vivo, medida em `/pt/alerts` (2026-09-16).
@@ -349,7 +352,7 @@ export function AlertasListaPage() {
   const colunas = useMemo(() => construirColunas(setDetalhe), []);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-gp-2xl">
+    <div className={RAIZ_DE_PAGINA}>
       <PageHeader
         title="Alertas"
         description={ALERTAS_LISTA_TEXTOS.aviso}

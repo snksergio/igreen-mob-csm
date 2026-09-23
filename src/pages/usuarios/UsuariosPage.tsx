@@ -20,7 +20,10 @@ import {
 } from "./usuarios-mock";
 import { UsuarioDetailPanel } from "./UsuarioDetailPanel";
 import { avisoDeExcluido } from "~/components/feedback";
-import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
+import {
+  ALTURA_DE_TABELA,
+  RAIZ_DE_PAGINA,
+} from "~/components/altura-de-tabela";
 
 /**
  * Tela de Usuários — medida em `/pt/settings/users?page=1` (2026-09-16).
@@ -290,7 +293,7 @@ export function UsuariosPage() {
   const comSaldoNegativo = USUARIOS.filter((u) => u.carteira < 0).length;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-gp-2xl">
+    <div className={RAIZ_DE_PAGINA}>
       <PageHeader
         title="Usuários"
         description={USUARIOS_TEXTOS.aviso}

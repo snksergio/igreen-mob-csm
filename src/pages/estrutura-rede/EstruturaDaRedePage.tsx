@@ -21,7 +21,10 @@ import { EmpresaFormPanel } from "./EmpresaFormPanel";
 import { LocalFormPanel } from "./LocalFormPanel";
 import { CartaoDaEstrutura } from "./estrutura-cartao";
 import { avisoDeExcluido } from "~/components/feedback";
-import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
+import {
+  ALTURA_DE_TABELA,
+  RAIZ_DE_PAGINA,
+} from "~/components/altura-de-tabela";
 
 /**
  * Tela de Estrutura da rede — medida em `/pt/settings/companies-net?page=1` (2026-09-16).
@@ -124,7 +127,7 @@ export function EstruturaDaRedePage() {
   return (
     /* `min-h-0 flex-1` — o padrão das telas de tabela: raiz de altura limitada pra que
        a grade abaixo ocupe a sobra e role por dentro, com toolbar e rodapé parados. */
-    <div className="flex min-h-0 flex-1 flex-col gap-gp-2xl">
+    <div className={RAIZ_DE_PAGINA}>
       <PageHeader
         title="Estrutura da rede"
         description={ESTRUTURA_TEXTOS.aviso}

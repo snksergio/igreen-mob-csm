@@ -10,7 +10,10 @@ import { PERFIS_DE_PRECO, type PerfilDePreco } from "./precos-mock";
 import { construirColunas } from "./precos-columns";
 import { PrecoDetailPanel } from "./PrecoDetailPanel";
 import { ModalCriarPerfil } from "./precos-modais";
-import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
+import {
+  ALTURA_DE_TABELA,
+  RAIZ_DE_PAGINA,
+} from "~/components/altura-de-tabela";
 
 /**
  * Tela de Preços — medida em `/pt/price?page=1` (2026-09-16).
@@ -47,7 +50,7 @@ export function PrecosPage() {
   );
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-gp-2xl">
+    <div className={RAIZ_DE_PAGINA}>
       <PageHeader
         title="Preços"
         /* Texto literal da referência — o aviso recorrente do escopo global. */

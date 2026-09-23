@@ -14,7 +14,10 @@ import {
   ESTRUTURA_TEXTOS,
   type NoDaRede,
 } from "~/pages/estrutura-rede/estrutura-mock";
-import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
+import {
+  ALTURA_DE_TABELA,
+  RAIZ_DE_PAGINA,
+} from "~/components/altura-de-tabela";
 import { LocalFormPanel } from "~/pages/estrutura-rede/LocalFormPanel";
 import { CelulaDeMotorista } from "~/pages/motoristas/motoristas-ui";
 import { Etiqueta } from "~/pages/transacoes/transacoes-ui";
@@ -233,7 +236,7 @@ export function LocaisPage() {
        raiz pra que a tabela abaixo possa ocupar a sobra e rolar por dentro, mantendo
        toolbar e paginação parados. Sem `pb`: a página não rola, então não há fim de
        rolagem pra dar respiro. */
-    <div className="flex min-h-0 flex-1 flex-col gap-gp-2xl">
+    <div className={RAIZ_DE_PAGINA}>
       <PageHeader
         title="Locais"
         description={ESTRUTURA_TEXTOS.aviso}

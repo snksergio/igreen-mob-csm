@@ -85,8 +85,13 @@ export function LoginPage({ onEntrar }: { onEntrar: () => void }) {
     onEntrar();
   };
 
+  /* ⚠️ `min-h-dvh` e não `min-h-screen`. `min-h-screen` é `100vh`, que no navegador de
+     celular inclui a faixa da barra de endereço — a página nasce mais alta que a área
+     visível e ganha barra de rolagem vertical sem ter o que rolar. `dvh` é a altura
+     dinâmica, a que a pessoa realmente vê. Era a única `vh` do projeto: o `AppShell` do
+     DS já usa `100dvh`. */
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center gap-gp-2xl overflow-hidden bg-bg-canvas p-pad-2xl">
+    <div className="relative flex min-h-dvh flex-col items-center justify-center gap-gp-2xl overflow-hidden bg-bg-canvas p-pad-2xl">
       <div className="relative z-10 grid w-full max-w-[1000px] overflow-hidden rounded-radius-2xl border border-border-subtle shadow-sh-lg lg:min-h-[620px] lg:grid-cols-2">
         {/* ── Esquerda: formulário ── */}
         <div className="flex flex-col justify-center gap-gp-3xl bg-bg-surface p-pad-4xl lg:px-[40px] lg:py-pad-6xl">

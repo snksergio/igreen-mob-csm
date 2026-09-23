@@ -8,7 +8,10 @@ import { construirColunas } from "./carregadores-columns";
 import { CarregadorDetailPanel } from "./CarregadorDetailPanel";
 import { ModalExcluirCarregador } from "./carregadores-modais";
 import { ModalAdicionarCarregador } from "./ModalAdicionarCarregador";
-import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
+import {
+  ALTURA_DE_TABELA,
+  RAIZ_DE_PAGINA,
+} from "~/components/altura-de-tabela";
 
 /**
  * Tela de Carregadores — medida em `/pt/chargers?page=1` (2026-09-16).
@@ -61,7 +64,7 @@ export function CarregadoresPage() {
   );
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-gp-2xl">
+    <div className={RAIZ_DE_PAGINA}>
       <PageHeader
         title="Carregadores"
         /* Texto literal da referência — o aviso recorrente do escopo global. */

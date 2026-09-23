@@ -31,7 +31,10 @@ import { ChipDePerfilOuMisto } from "./permissoes-ui";
 import { AcessoDetailPanel } from "./AcessoDetailPanel";
 import { AcessoFormPanel } from "./AcessoFormPanel";
 import { PerfisDeAcessoPanel } from "./PerfisDeAcessoPanel";
-import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
+import {
+  ALTURA_DE_TABELA,
+  RAIZ_DE_PAGINA,
+} from "~/components/altura-de-tabela";
 
 /**
  * Tela de Permissões — medida em `/pt/permissions?page=1` (2026-09-16).
@@ -286,7 +289,7 @@ export function PermissoesPage() {
   ).length;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-gp-2xl">
+    <div className={RAIZ_DE_PAGINA}>
       <PageHeader
         title="Permissões"
         description={PERMISSOES_TEXTOS.aviso}

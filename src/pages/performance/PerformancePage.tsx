@@ -37,6 +37,7 @@ import {
   formatarCurto,
 } from "./performance-ui";
 import { SeletorDeCarregadores } from "./SeletorDeCarregadores";
+import { ACOES_EMPILHAVEIS } from "~/components/altura-de-tabela";
 
 /**
  * Tela de Performance — dados medidos em `/pt/performance?period=thisMonth` (2026-09-16).
@@ -148,7 +149,9 @@ export function PerformancePage() {
            carregadores", "Mês atual"), e rótulo acima de controle dentro de um header
            criaria uma terceira hierarquia de texto na mesma linha. */
         actions={
-          <>
+          /* ⚠️ Wrapper em vez de `<>`: três controles numa linha de 390px ficam com um
+             terço cada. Empilhados, cada um é um alvo de toque inteiro. */
+          <div className={ACOES_EMPILHAVEIS}>
             <SeletorDeCarregadores
               selecionados={carregadores}
               onChange={setCarregadores}
@@ -165,13 +168,13 @@ export function PerformancePage() {
                    "Mês atual" (9 caracteres) e com período escolhido diz "01 de set. de
                    2026 – 30 de set. de 2026" (39). Travado no menor, o texto truncava;
                    travado no maior, sobrava um campo enorme mostrando duas palavras. */
-                className={periodo?.from ? "w-[260px]" : "w-[140px]"}
+                className={`max-sm:!w-full ${periodo?.from ? "w-[260px]" : "w-[140px]"}`}
               />
             </span>
             <Button variant="filled" color="primary" size="md" iconLeft={<Download />}>
               Download dos dados
             </Button>
-          </>
+          </div>
         }
       />
 

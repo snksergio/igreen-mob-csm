@@ -19,7 +19,10 @@ import { LOCAIS } from "~/pages/transacoes/transacoes-mock";
 import { ANOS, REPASSES, type Repasse } from "./repasses-mock";
 import { construirColunas } from "./repasses-columns";
 import { RepasseDetailPanel } from "./RepasseDetailPanel";
-import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
+import {
+  ALTURA_DE_TABELA,
+  RAIZ_DE_PAGINA,
+} from "~/components/altura-de-tabela";
 
 /**
  * Tela de Repasses — medida em `/pt/financial/transfers` (2026-09-16).
@@ -107,7 +110,7 @@ export function RepassesPage() {
   };
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-gp-2xl">
+    <div className={RAIZ_DE_PAGINA}>
       <PageHeader
         title="Repasses"
         /* Texto literal da referência — o aviso recorrente do escopo global. */

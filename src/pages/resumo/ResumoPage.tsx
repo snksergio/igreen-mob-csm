@@ -24,7 +24,10 @@ import { construirColunas } from "~/pages/transacoes/transacoes-columns";
 import { TRANSACOES_MOCK, type Transacao } from "~/pages/transacoes/transacoes-mock";
 import { TransacaoDetailPanel } from "~/pages/transacoes/sections/TransacaoDetailPanel";
 import { RESUMO_TEXTOS, indicadoresDoResumo } from "./resumo-mock";
-import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
+import {
+  ALTURA_DE_TABELA,
+  RAIZ_DE_PAGINA,
+} from "~/components/altura-de-tabela";
 
 /**
  * Tela de Resumo — medida em `/pt/resume?period=thisMonth&page=1` (2026-09-16).
@@ -101,7 +104,7 @@ export function ResumoPage() {
   const rotuloPeriodo = useMemo(() => rotuloDoPeriodo(periodo), [periodo]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-gp-2xl">
+    <div className={RAIZ_DE_PAGINA}>
       <PageHeader
         title="Resumo"
         description="Dados correspondentes aos locais selecionados no topo. Para alterar, use o seletor no topo da página."

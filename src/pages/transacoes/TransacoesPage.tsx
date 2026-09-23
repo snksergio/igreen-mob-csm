@@ -14,7 +14,10 @@ import { dentroDoPeriodo, rotuloDoPeriodo } from "~/components/periodo";
 import { construirColunas } from "./transacoes-columns";
 import { TRANSACOES_MOCK, type Transacao } from "./transacoes-mock";
 import { TransacaoDetailPanel } from "./sections/TransacaoDetailPanel";
-import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
+import {
+  ALTURA_DE_TABELA,
+  RAIZ_DE_PAGINA,
+} from "~/components/altura-de-tabela";
 
 /**
  * As duas visões fixas.
@@ -89,7 +92,7 @@ export function TransacoesPage() {
     // e o próximo bloco (`_claude/rules/ds-design.md`, e o esqueleto do `DESIGN.md`), e
     // é o que o VP usa na raiz da página (MapaClientesPage.tsx:484). Estava `gap-gp-xl`
     // (12px) — apertado, e divergindo da regra.
-    <div className="flex min-h-0 flex-1 flex-col gap-gp-2xl">
+    <div className={RAIZ_DE_PAGINA}>
       <PageHeader
         title="Transações"
         description="Dados correspondentes aos locais selecionados no topo. Para alterar, use o seletor no topo da página."

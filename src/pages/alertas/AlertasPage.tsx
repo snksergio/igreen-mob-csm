@@ -22,7 +22,10 @@ import { avisoDeExcluido } from "~/components/feedback";
 import { ChipsComResto } from "./alertas-ui";
 import { GrupoDeAlertasPanel } from "./GrupoDeAlertasPanel";
 import { GrupoDeAlertasFormPanel } from "./GrupoDeAlertasFormPanel";
-import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
+import {
+  ALTURA_DE_TABELA,
+  RAIZ_DE_PAGINA,
+} from "~/components/altura-de-tabela";
 
 /**
  * Tela de Configuração de grupos de alertas — medida em `/pt/alert-groups?page=1`
@@ -215,7 +218,7 @@ export function AlertasPage() {
   const ativos = GRUPOS_DE_ALERTAS.filter((g) => g.ativo).length;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-gp-2xl">
+    <div className={RAIZ_DE_PAGINA}>
       <PageHeader
         title="Configuração de grupos de alertas"
         description={ALERTAS_TEXTOS.aviso}

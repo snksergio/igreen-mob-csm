@@ -21,7 +21,10 @@ import {
 import { ChipDeNivel, ChipDeSituacao } from "./splits-ui";
 import { SplitDetailPanel } from "./SplitDetailPanel";
 import { SplitFormPanel } from "./SplitFormPanel";
-import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
+import {
+  ALTURA_DE_TABELA,
+  RAIZ_DE_PAGINA,
+} from "~/components/altura-de-tabela";
 
 /**
  * Tela de Splits — medida em `/pt/financial/split?page=1` (2026-09-17).
@@ -229,7 +232,7 @@ export function SplitsPage() {
   const fechados = SPLITS.filter((s) => totalDistribuido(s) === 100).length;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-gp-2xl">
+    <div className={RAIZ_DE_PAGINA}>
       <PageHeader
         title="Splits"
         description={SPLITS_TEXTOS.aviso}

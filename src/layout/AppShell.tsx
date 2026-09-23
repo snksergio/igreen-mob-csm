@@ -24,6 +24,42 @@ import { EMPRESAS, LOCAIS } from "~/pages/transacoes/transacoes-mock";
  */
 const LARGURA_DE_RAIL_ABERTO = 1360;
 
+/**
+ * Largura abaixo da qual a sidebar vira DRAWER (o `md` do DS).
+ */
+const LARGURA_DE_DRAWER = 768;
+
+/**
+ * Fecha o drawer depois de navegar.
+ *
+ * 📋 **Lacuna do DS.** Com `sidebar="single"` o drawer do celular É a sidebar
+ * expandida — `expanded` e visibilidade são o mesmo estado (documentado no
+ * `app-shell.types.d.ts`). Clicar num item navega e **não fecha nada**: a pessoa
+ * escolhe a tela e continua olhando para o menu, tendo que fechar na mão. Medido a
+ * 390px: o `aside` segue com 390px de largura depois da navegação.
+ *
+ * Como o DS não expõe callback de "item clicado no mobile" nem prop de fechar, o
+ * caminho é o mesmo do recolhimento automático: acionar o botão do próprio
+ * componente. Se o `aria-label` mudar, o drawer volta a ficar aberto — comportamento
+ * de hoje, não tela quebrada.
+ */
+function fecharDrawerSeMobile() {
+  if (typeof window === "undefined") return;
+  if (window.innerWidth >= LARGURA_DE_DRAWER) return;
+  /* ⚠️ Atraso, não `requestAnimationFrame`: no frame seguinte o DS ainda não
+     reconciliou o clique no item, e o botão de recolher é encontrado num DOM que será
+     substituído — o clique se perde. 250ms é depois da troca de rota e antes de a pessoa
+     perceber. */
+  window.setTimeout(() => {
+    const barra = document.querySelector("aside");
+    if (!barra || barra.getBoundingClientRect().width < 200) return;
+    const botao = [...barra.querySelectorAll("button")].find((b) =>
+      /recolher|colapsar/i.test(b.getAttribute("aria-label") ?? ""),
+    );
+    botao?.click();
+  }, 250);
+}
+
 function railComecaRetraido() {
   if (typeof window === "undefined") return false;
   return window.innerWidth < LARGURA_DE_RAIL_ABERTO;
@@ -229,7 +265,10 @@ export function AppShell({
         />
       }
       activeItemId={activePage}
-      onSidebarItemClick={(id) => onNavigate(id as PageId)}
+      onSidebarItemClick={(id) => {
+        onNavigate(id as PageId);
+        fecharDrawerSeMobile();
+      }}
       breadcrumb={[{ label: "iGreen MOB CMS" }, { label: PAGE_LABELS[activePage] }]}
       /* Os dois botoes do header ao lado da busca: tema e notificacoes. Cada um so
          RENDERIZA se as props dele vierem — `themeOptions` para o de tema, e

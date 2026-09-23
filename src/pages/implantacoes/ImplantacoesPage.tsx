@@ -49,7 +49,10 @@ import {
 } from "./implantacoes-ui";
 import { ImplantacaoFormPanel } from "./ImplantacaoFormPanel";
 import { PanelComAbas } from "./PanelComAbas";
-import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
+import {
+  ALTURA_DE_TABELA,
+  RAIZ_DE_PAGINA,
+} from "~/components/altura-de-tabela";
 
 /**
  * Funil de implantação — Kanban e tabela sobre os mesmos dados.
@@ -438,7 +441,7 @@ export function ImplantacoesPage() {
   ];
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-gp-2xl">
+    <div className={RAIZ_DE_PAGINA}>
       <PageHeader
         title="Implantações"
         description={IMPLANTACOES_TEXTOS.aviso}

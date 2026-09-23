@@ -20,7 +20,10 @@ import {
 } from "./cupons-mock";
 import { StatusChip, TipoChip } from "./cupons-ui";
 import { CupomFormPanel } from "./CupomFormPanel";
-import { ALTURA_DE_TABELA } from "~/components/altura-de-tabela";
+import {
+  ALTURA_DE_TABELA,
+  RAIZ_DE_PAGINA,
+} from "~/components/altura-de-tabela";
 
 /**
  * Tela de Cupons — medida em `/pt/coupons?page=1` (2026-09-16).
@@ -186,7 +189,7 @@ export function CuponsPage() {
   );
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-gp-2xl">
+    <div className={RAIZ_DE_PAGINA}>
       <PageHeader
         title="Cupons"
         description="Dados correspondentes aos locais selecionados no topo. Para alterar, use o seletor no topo da página."
