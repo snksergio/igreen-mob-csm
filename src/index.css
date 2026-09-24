@@ -17,3 +17,29 @@
 
 @import "@snksergio/design-system/theme.css";
 @import "tw-animate-css";
+
+/* ⛔ O `body` do tema do DS pede `min-height: 100vh` — e `vh` no celular é a altura
+ * da janela COM A BARRA DE ENDEREÇO ESCONDIDA, não a que se vê. Com a barra à mostra
+ * (que é como a página nasce), o `body` já começa mais alto que a área visível, pela
+ * altura exata da barra.
+ *
+ * O que aparece, e foi relatado do celular real: a PÁGINA ganha um scroll que não
+ * corresponde a conteúdo nenhum; rolar esconde a barra do navegador (o "menu de cima
+ * some"); e por dentro o `<main>` do shell tem o scroll DELE — dois scrolls
+ * concorrentes na mesma tela. No login, que não tem shell, sobra só o fantasma.
+ *
+ * ⚠️ **Não reproduz na emulação do Chrome**: lá não existe barra de endereço, então
+ * `vh === dvh === svh` e a diferença é zero. Por isso passou por toda a auditoria de
+ * responsividade — ela foi feita em viewport emulado.
+ *
+ * `dvh` é a altura dinâmica: acompanha a barra aparecendo e sumindo, então o `body`
+ * nunca sobra. Vale junto com o `h-dvh` que passamos à raiz do `AppShell` — os dois
+ * precisam falar a mesma unidade, senão um deles volta a criar a sobra sozinho.
+ *
+ * 📋 Lacuna do DS: `body { min-height: 100vh }` no tema e `h-screen` na raiz do
+ * `AppShell` (`app-shell.styles.ts`). Como o tema é o arquivo que os quatro canais
+ * leem, isto chega em todo consumidor.
+ */
+body {
+  min-height: 100dvh;
+}

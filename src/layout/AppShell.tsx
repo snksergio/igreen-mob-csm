@@ -306,6 +306,17 @@ export function AppShell({
          devolvia a pessoa exatamente onde ela estava, que é o oposto de sair. Agora
          desautentica de verdade e cai na tela de login. */
       onLogout={onSair}
+      /* `h-dvh` sobrescreve o `h-screen` (= `100vh`) da raiz do shell. No celular
+         `vh` é a altura da janela COM A BARRA DE ENDEREÇO ESCONDIDA: o shell nascia
+         mais alto que a tela pela altura da barra, a página ganhava um scroll
+         fantasma e o `<main>` mantinha o dele — dois scrolls. Ver o comentário longo
+         no `src/index.css`, que corrige o outro lado (o `body`).
+
+         Os dois precisam da MESMA unidade. Corrigir só um deixa o outro criando a
+         sobra sozinho.
+
+         📋 Lacuna do DS: `app-shell.styles.ts` usa `h-screen` no `root`. */
+      className="h-dvh"
     >
       {children}
     </DsAppShell>
