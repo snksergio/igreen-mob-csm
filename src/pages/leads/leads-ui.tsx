@@ -444,11 +444,12 @@ export function ProgressoDoLead({ lead }: { lead: Lead }) {
        9px e os quatro segmentos com 0. Na versão anterior isso não aparecia porque o
        container era `flex-col`, e aí o `align-items: stretch` dava a largura de graça. */
     <span className="flex w-full min-w-0 items-center gap-gp-md">
-      /* ⚠️ Largura FIXA, não `flex-1`. Com `autoFit` a sobra da tabela é rateada entre as
-         colunas, então uma barra elástica cresce junto e passa a dominar a linha: baixar
-         a largura da coluna de 160 para 146 mudou a barra de 85 para 84px, praticamente
-         nada. Com 72px ela fica do mesmo tamanho em qualquer resolução — quatro blocos
-         de ~16px, que leem como barra sem competir com o nome do cliente. */
+      {/* ⚠️ Largura FIXA, não `flex-1`. Com `autoFit` a sobra da tabela é rateada entre
+          as colunas, então uma barra elástica cresce junto e passa a dominar a linha:
+          baixar a largura da coluna de 160 para 146 mudou a barra de 85 para 84px,
+          praticamente nada. Com 72px ela fica do mesmo tamanho em qualquer resolução —
+          quatro blocos de ~16px, que leem como barra sem competir com o nome do
+          cliente. */}
       <span
         className="flex w-[72px] shrink-0 gap-[3px]"
         role="img"
