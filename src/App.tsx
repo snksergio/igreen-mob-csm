@@ -20,6 +20,7 @@ import { AlertasListaPage } from "~/pages/alertas-lista/AlertasListaPage";
 import { MinhaContaPage } from "~/pages/minha-conta/MinhaContaPage";
 import { AlertasPage } from "~/pages/alertas/AlertasPage";
 import { CuponsPage } from "~/pages/cupons/CuponsPage";
+import { LeadsPage } from "~/pages/leads/LeadsPage";
 import { MotoristasPage } from "~/pages/motoristas/MotoristasPage";
 import { ImplantacoesPage } from "~/pages/implantacoes/ImplantacoesPage";
 import { LoginPage } from "~/pages/login/LoginPage";
@@ -145,6 +146,8 @@ export function App() {
         <AlertasPage />
       ) : page === "cupons" ? (
         <CuponsPage />
+      ) : page === "leads" ? (
+        <LeadsPage />
       ) : page === "motoristas" ? (
         <MotoristasPage />
       ) : page === "implantacoes" ? (

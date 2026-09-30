@@ -9,6 +9,7 @@ import {
   Tag,
   Ticket,
   TrendingUp,
+  UserPlus,
   Users,
   Wallet,
 } from "lucide-react";
@@ -37,6 +38,7 @@ export type PageId =
   | "cupons"
   | "permissoes"
   | "implantacoes"
+  | "leads"
   | "motoristas"
   | "estrutura-rede"
   | "locais"
@@ -57,6 +59,7 @@ export type PageId =
 
 /** Rótulo legível de cada destino — usado no breadcrumb e no placeholder. */
 export const PAGE_LABELS: Record<PageId, string> = {
+  leads: "Leads",
   dashboard: "Dashboard",
   resumo: "Resumo",
   transacoes: "Transações",
@@ -155,6 +158,19 @@ export const NAV_CATEGORIES: SingleMenuCategory[] = [
   },
   { id: "precos", icon: <Tag />, label: "Preços", href: "#precos" },
   { id: "cupons", icon: <Ticket />, label: "Cupons", href: "#cupons" },
+  /**
+   * `Leads` — quem tocou em "Carregar aqui" e ainda está na janela de 7 dias.
+   *
+   * ⚠️ **Vizinho de Motoristas de propósito, e acima dele.** É a MESMA pessoa em dois
+   * momentos: em `Leads` ela tem prazo correndo e alguém precisa falar com ela; em
+   * `Motoristas` ela já é carteira. A fronteira entre as duas telas é o fim da janela
+   * — que é o critério que impede a lista de leads de virar histórico infinito.
+   *
+   * Fica solto no topo, sem grupo, pelo mesmo motivo de Implantações: grupo de um não
+   * separa nada. Quando aparecer a segunda tela do assunto, `Leads`, `Motoristas` e
+   * `Implantações` viram o grupo "Comercial".
+   */
+  { id: "leads", icon: <UserPlus />, label: "Leads", href: "#leads" },
   { id: "motoristas", icon: <Users />, label: "Motoristas", href: "#motoristas" },
   /**
    * `Implantações` — o funil de um ponto novo, da proposta à instalação.
